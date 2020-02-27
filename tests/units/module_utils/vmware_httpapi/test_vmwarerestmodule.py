@@ -5,6 +5,12 @@ __metaclass__ = type
 import logging
 
 import pytest
+import six
+
+if six.PY3:
+    from unittest import mock
+else:
+    import mock
 
 from ansible.module_utils.connection import Connection
 import ansible_collections.ansible.vmware_rest.plugins.module_utils.vmware_httpapi as vmware_httpapi
@@ -46,3 +52,28 @@ def test_get_url_with_filter(monkeypatch):
 
     url = module.get_url_with_filter(object_type)
     assert url == "/rest/vcenter/vm?filter.names=a"
+
+
+def test_handle_default_generic(monkeypatch):
+    monkeypatch.setattr(
+        vmware_httpapi.VmwareRestModule,
+        "__init__",
+        mock.Mock(return_value=None),
+    )
+    monkeypatch.setattr(vmware_httpapi.VmwareRestModule, "fail", mock.Mock())
+    m = vmware_httpapi.VmwareRestModule()
+    m.response = {
+        "data": {
+            "localizableMessages": [
+                {
+                    "defaultMessage": "Not found.",
+                    "id": "com.vmware.vapi.rest.httpNotFound",
+                }
+            ],
+            "majorErrorCode": 404,
+            "name": "com.vmware.vapi.rest.httpNotFound",
+        },
+        "status": 404,
+    }
+    m.handle_default_generic()
+    m.fail.assert_called_once_with(msg="Not found.")

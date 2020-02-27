@@ -399,7 +399,13 @@ class VmwareRestModule(AnsibleModule):
 
     def handle_default_generic(self):
         """Catch-all handler for all other status codes"""
-        msg = self.response["data"]["value"]["messages"][0]["default_message"]
+        data = self.response["data"]
+        if "value" in data:
+            msg = data["value"]["messages"][0]["default_message"]
+        elif "localizableMessages" in data:
+            msg = data["localizableMessages"][0]["defaultMessage"]
+        else:
+            msg = data
         self.fail(msg=msg)
 
     def handle_default_object(self):

@@ -365,7 +365,6 @@ def main():
         #is_multipart=True,
     )
 
-    import q
     globals()["_" + module.params['state']](module)
     module.exit()
 """

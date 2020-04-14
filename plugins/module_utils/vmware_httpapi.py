@@ -7,7 +7,6 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 
-import q
 import re
 import sys
 
@@ -258,7 +257,6 @@ INVENTORY = dict(
     ),
 )
 
-
 class VmwareRestModule(AnsibleModule):
     def __init__(
         self, is_multipart=False, use_object_handler=False, *args, **kwargs
@@ -404,8 +402,6 @@ class VmwareRestModule(AnsibleModule):
 
     def handle_default_404(self):
         """Default handler for Not-Found (404) errors"""
-        import q
-        q(self.response)
         msg = "Requested object was not found."
         try:
             msg = [m["default_message"] for m in self.response["data"]["value"]["messages"]]
@@ -467,8 +463,6 @@ class VmwareRestModule(AnsibleModule):
                 "data"
             ] = self._connection.send_request(url, data, method="POST")
         except Exception as e:
-            import q
-            q(e)
             self.fail(msg=to_native(e))
         self._use_handler()
 

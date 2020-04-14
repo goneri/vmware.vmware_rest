@@ -377,7 +377,7 @@ class VmwareRestModule(AnsibleModule):
         """Invokes the appropriate handler based on status_code"""
         if self.response["status"] in self.status_code:
             status_key = "success"
-        elif self.response["status"] == 400 and self.response["data"]["type"] == "com.vmware.vapi.std.errors.already_exists":
+        elif self.response["status"] == 400 and self.response["data"].get("type") == "com.vmware.vapi.std.errors.already_exists":
             status_key = "success"
         else:
             status_key = str(self.response["status"])
@@ -411,7 +411,10 @@ class VmwareRestModule(AnsibleModule):
 
     def handle_default_generic(self):
         """Catch-all handler for all other status codes"""
-        msg = [m["default_message"] for m in self.response["data"]["value"]["messages"]]
+        try:
+            msg = [m["default_message"] for m in self.response["data"]["value"]["messages"]]
+        except KeyError:
+            msg = self.response
         self.fail(msg=msg)
 
     def handle_default_object(self):
@@ -688,3 +691,24 @@ class VmwareRestModule(AnsibleModule):
                 )
             )
         return argument_spec
+
+
+
+def gen_args(module, in_query_parameter):
+    args = ''
+    for i in in_query_parameter:
+        v = module.params.get(i)
+        if (not v):
+            continue
+        if (not args):
+            args = '?'
+        else:
+            args += '&'
+        if isinstance(v, list):
+            for j in v:
+                args += ((i + '=') + j)
+        elif (isinstance(v, bool) and v):
+            args += (i + '=true')
+        else:
+            args += ((i + '=') + v)
+    return args

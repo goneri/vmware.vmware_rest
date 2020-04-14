@@ -27,25 +27,6 @@ IN_QUERY_PARAMETER = None
 
 import ansible_collections.ansible.vmware_rest.plugins.module_utils.vmware_httpapi as vmware_httpapi
 
-def gen_args(module):
-    args = ""
-    for i in IN_QUERY_PARAMETER:
-        v = module.params.get(i)
-        if not v:
-            continue
-        if not args:
-            args = "?"
-        else:
-            args += "&"
-        if isinstance(v, list):
-            for j in v:
-                args += i + "=" + j
-        elif isinstance(v, bool) and v:
-            args += i + "=true"
-        else:
-            args += i + "=" + v
-    return args
-
 def url(module):
     pass
 
@@ -241,6 +222,9 @@ class AnsibleModuleBase:
         first_operation = list(self.resource.operations.values())[0]
         path = first_operation[1]
 
+        if not path.startswith("/rest"): # Pre 7.0.0
+            path = "/rest" + path
+
         url_func = ast.parse(self.URL.format(path=path)).body[0]
         return url_func
 
@@ -372,6 +356,8 @@ def main():
 
         for operation in self.default_operationIds:
             (verb, path, _) = self.resource.operations[operation]
+            if not path.startswith("/rest"): # TODO
+                path = "/rest" + path
             if "$" in operation:
                 print(
                     "skipping operation {operation} for {path}".format(
@@ -382,7 +368,7 @@ def main():
 
             FUNC_NO_DATA_TPL = """
 def _{operation}(module):
-    module.{verb}(url="{path}".format(**module.params) + gen_args(module))
+    module.{verb}(url="{path}".format(**module.params) + vmware_httpapi.gen_args(module, IN_QUERY_PARAMETER))
 """
             FUNC_WITH_DATA_TPL = """
 def _{operation}(module):
@@ -427,17 +413,17 @@ class AnsibleInfoModule(AnsibleModuleBase):
 
     URL_WITH_LIST = """
 if module.params['{list_index}']:
-    return "{path}".format(**module.params) + gen_args(module)
+    return "{path}".format(**module.params) + vmware_httpapi.gen_args(module, IN_QUERY_PARAMETER)
 else:
-    return "{list_path}".format(**module.params) + gen_args(module)
+    return "{list_path}".format(**module.params) + vmware_httpapi.gen_args(module, IN_QUERY_PARAMETER)
 """
 
     URL_LIST_ONLY = """
-return "{list_path}".format(**module.params) + gen_args(module)
+return "{list_path}".format(**module.params) + vmware_httpapi.gen_args(module, IN_QUERY_PARAMETER)
 """
 
     URL = """
-return "{path}".format(**module.params) + gen_args(module)
+return "{path}".format(**module.params) + vmware_httpapi.gen_args(module, IN_QUERY_PARAMETER)
 """
 
     def __init__(self, resource, definitions):
@@ -463,6 +449,11 @@ return "{path}".format(**module.params) + gen_args(module)
             path = self.resource.operations["get"][1]
         if "list" in self.resource.operations:
             list_path = self.resource.operations["list"][1]
+
+        if path and not path.startswith("/rest"): # Pre 7.0.0
+            path = "/rest" + path
+        if list_path and not list_path.startswith("/rest"): # Pre 7.0.0
+            list_path = "/rest" + list_path
 
         if not path:
             url_func = ast.parse(
@@ -644,7 +635,7 @@ class SwaggerFile:
 
 
 def main():
-    p = pathlib.Path("6.7.0")
+    p = pathlib.Path("7.0.0")
     for json_file in p.glob("*.json"):
         print("Generating modules from {}".format(json_file))
         swagger_file = SwaggerFile(json_file)
@@ -656,7 +647,7 @@ def main():
                     resource, definitions=swagger_file.definitions
                 )
                 if len(module.default_operationIds) > 0:
-                    module.write_functional_tests()
+                    # module.write_functional_tests()
                     module.renderer()
             module = AnsibleModule(
                 resource, definitions=swagger_file.definitions

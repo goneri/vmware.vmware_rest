@@ -4,7 +4,7 @@ Missing features
 - folder: there is no `create` operation for `/vcenter/folder`. As a result we cannot provide a `vcenter_folder` module.
 - cluster: same problem
 - datastore: same problem. For instance, we cannot mount a NFS volume
-- network modules (vswitch, dvswitch, portgroup)
+- network modules (vswitch, dvswitch, portgroup), those are covered by the NSX-T API.
 
 Also
 ====

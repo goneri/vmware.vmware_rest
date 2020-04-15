@@ -377,10 +377,21 @@ class VmwareRestModule(AnsibleModule):
         """Invokes the appropriate handler based on status_code"""
         if self.response["status"] in self.status_code:
             status_key = "success"
-        elif self.response["status"] == 400 and self.response["data"].get("type") == "com.vmware.vapi.std.errors.already_exists":
-            status_key = "success"
         else:
             status_key = str(self.response["status"])
+
+        # Some special cases
+        try:
+            if self.response["status"] == 400:
+                if self.response["data"]["type"] in ("com.vmware.vapi.std.errors.already_exists", "com.vmware.vapi.std.errors.already_in_desired_state"):
+                    status_key = "success"
+            # vSphere 7.0.0, vcenter_host already connected
+            elif self.response["status"] == 500:
+                if self.response["data"]["value"]["messages"][0]["default_message"] == "Provider method implementation threw unexpected exception: com.vmware.vim.binding.vim.fault.DuplicateName cannot be cast to com.vmware.vim.binding.vim.fault.AlreadyConnected":
+                    status_key = "success"
+        except KeyError:
+            pass
+
         if status_key in self._status_handlers.keys():
             self._status_handlers[status_key]()
         else:
@@ -414,7 +425,11 @@ class VmwareRestModule(AnsibleModule):
         try:
             msg = [m["default_message"] for m in self.response["data"]["value"]["messages"]]
         except KeyError:
+            pass
+
+        if not msg:
             msg = self.response
+
         self.fail(msg=msg)
 
     def handle_default_object(self):

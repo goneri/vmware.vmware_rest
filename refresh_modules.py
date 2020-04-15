@@ -61,6 +61,9 @@ class Resource:
         _path = path.path.split("?")[0]
 
         elements = [i for i in _path.split("/") if is_element(i)]
+        # workaround for vcenter_vm_power
+        if elements[-1] in ('stop', 'start', 'suspend', 'reset'):
+            elements = elements[:-1]
         if elements[0:3] == ["rest", "com", "vmware"]:
             elements = elements[3:]
         elif elements[0:2] == ["rest", "hvc"]:

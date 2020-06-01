@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import argparse
 import ast
@@ -6,42 +6,41 @@ import json
 import re
 import yaml
 import pathlib
+import astunparse
 
 from pprint import pprint
 
 
 MODULE_TEMPLATE = """
+# Default template
 from __future__ import absolute_import, division, print_function
+
+from ansible.module_utils.basic import env_fallback
+from ansible_collections.vmware.vmware_rest.plugins.module_utils.init import AnsibleTurboModule
+from ansible_collections.vmware.vmware_rest.plugins.module_utils.vmware_rest import gen_args, update_changed_flag
 
 __metaclass__ = type
 
 DOCUMENTATION = ""
 
-ANSIBLE_METADATA = {
-    "metadata_version": "1.1",
-    "status": ["preview"],
-    "supported_by": "community",
-}
-
 IN_QUERY_PARAMETER = None
 
-import ansible_collections.ansible.vmware_rest.plugins.module_utils.vmware_httpapi as vmware_httpapi
 
-def url(module):
+def run_module():
+    module_args = prepare_argument_spec()
+    module = AnsibleTurboModule('vmware.vmware_rest', "{name}", argument_spec=module_args, supports_check_mode=True)
+    module.run()
+
+def url(params):
     pass
 
-def prepare_argument_spec():
-    argument_spec = vmware_httpapi.VmwareRestModule.create_argument_spec()
-    return argument_spec
-
+def entry_point():
+    pass
 
 def main():
-    pass
+    run_module()
 
 
-
-if __name__ == "__main__":
-    main()
 """
 
 
@@ -163,6 +162,9 @@ class AnsibleModuleBase:
                 _add_key(assign, "aliases", [parameter["name"]])
                 parameter["name"] = self.list_index()
 
+            if parameter["name"] in ["user_name", "username", "password"]:
+                _add_key(assign, "nolog", True)
+
             if parameter.get("required"):
                 if (
                     hasattr(self, "list_index")
@@ -171,6 +173,10 @@ class AnsibleModuleBase:
                     pass
                 else:
                     _add_key(assign, "required", True)
+
+            # "bus" option defaulting on 0
+            if parameter["name"] == "bus":
+                _add_key(assign, "default", 0)
 
             _add_key(assign, "type", self.python_type(parameter["type"]))
             if "enum" in parameter:
@@ -186,9 +192,9 @@ class AnsibleModuleBase:
         documentation = {
             "author": ["Ansible VMware team"],
             "description": self.description,
-            "extends_documentation_fragment": [
-                "ansible.vmware_rest.VmwareRestModule.documentation"
-            ],
+            # "extends_documentation_fragment": [
+            #     "ansible.vmware_rest.VmwareRestModule.documentation"
+            # ],
             "module": self.name,
             "notes": ["Tested on vSphere 6.7"],
             "options": {},
@@ -233,10 +239,11 @@ class AnsibleModuleBase:
 
     def python_type(self, value):
         TYPE_MAPPING = {
-            "string": "str",
             "array": "list",
-            "object": "dict",
             "boolean": "bool",
+            "integer": "int",
+            "object": "dict",
+            "string": "str",
         }
         return TYPE_MAPPING.get(value, value)
 
@@ -291,38 +298,112 @@ class AnsibleModuleBase:
 
     def renderer(self):
         syntax_tree = ast.parse(MODULE_TEMPLATE)
+        DEFAULT_MODULE = """
+#!/usr/bin/env python
+# Info module template
+from __future__ import absolute_import, division, print_function
+__metaclass__ = type
+import socket
+import json
 
+DOCUMENTATION = ""
+
+IN_QUERY_PARAMETER = None
+
+
+from ansible.module_utils.basic import env_fallback
+from ansible_collections.vmware.vmware_rest.plugins.module_utils.init import AnsibleTurboModule
+from ansible_collections.vmware.vmware_rest.plugins.module_utils.vmware_rest import gen_args, update_changed_flag
+
+
+
+def prepare_argument_spec():
+    argument_spec = {{
+        "vcenter_hostname": dict(
+            type='str',
+            required=False,
+            fallback=(env_fallback, ['VMWARE_HOST']),
+        ),
+        "vcenter_username": dict(
+            type='str',
+            required=False,
+            fallback=(env_fallback, ['VMWARE_USER']),
+        ),
+        "vcenter_password": dict(
+            type='str',
+            required=False,
+            no_log=True,
+            fallback=(env_fallback, ['VMWARE_PASSWORD']),
+        ),
+    }}
+
+
+
+
+    return argument_spec
+
+def run_module( ):
+    module_args = prepare_argument_spec()
+    module = AnsibleTurboModule(module_name="{name}", collection_name='vmware.vmware_rest', argument_spec=module_args, supports_check_mode=True)
+    module.run()
+
+def url(params):
+    pass
+
+def entry_point():
+    pass
+
+def main():
+    run_module()
+
+if __name__ == '__main__':
+    main()
+
+"""
+        syntax_tree = ast.parse(DEFAULT_MODULE.format(name=self.name))
         arguments = self.gen_arguments_py()
         documentation = self.gen_documentation()
         url_func = self.gen_url_func()
-        main_func = self.gen_main_func()
+        #main_func = self.gen_main_func()
+        entry_point_func = self.gen_entry_point_func()
+
         in_query_parameters = self.in_query_parameters()
+
 
         class SumTransformer(ast.NodeTransformer):
             def visit_FunctionDef(self, node):
-                if node.name == "url":
-                    node.body[0] = url_func
-                elif node.name == "main":
-                    node = main_func
-                elif node.name == "prepare_argument_spec":
-                    for arg in arguments:
-                        node.body.insert(1, arg)
+
                 return node
 
             def visit_Assign(self, node):
-                if node.targets[0].id == "DOCUMENTATION":
-                    node.value = ast.Str(documentation)
+
 
                 if node.targets[0].id == "IN_QUERY_PARAMETER":
                     node.value = ast.Str(in_query_parameters)
 
                 return node
 
+
+            def visit_FunctionDef(self, node):
+                if node.name == "url":
+                    node.body[0] = url_func
+                elif node.name == "entry_point":
+                    node = entry_point_func
+                elif node.name == "prepare_argument_spec":
+                    for arg in arguments:
+                        node.body.insert(1, arg)
+                return node
+            def visit_Assign(self, node):
+                if node.targets[0].id == "DOCUMENTATION":
+                   node.value = ast.Str(documentation)
+                elif node.targets[0].id == "IN_QUERY_PARAMETER":
+                    node.value = ast.Str(in_query_parameters)
+                return node
+
         syntax_tree = SumTransformer().visit(syntax_tree)
         syntax_tree = ast.fix_missing_locations(syntax_tree)
-        import astunparse
 
-        print("rendering {name}".format(name=self.name))
+
         module_dir = pathlib.Path("plugins/modules")
         module_dir.mkdir(exist_ok=True)
         module_py_file = module_dir / "{name}.py".format(name=self.name)
@@ -330,10 +411,11 @@ class AnsibleModuleBase:
             fd.write(astunparse.unparse(syntax_tree))
 
 
+
 class AnsibleModule(AnsibleModuleBase):
 
     URL = """
-return "{path}".format(**module.params)
+return "https://{{vcenter_hostname}}{path}".format(**params)
 """
 
     def __init__(self, resource, definitions):
@@ -343,19 +425,22 @@ return "{path}".format(**module.params)
             list(self.resource.operations.keys())
         ) - set(["get", "list"])
 
-    def gen_main_func(self):
-        MAIN_FUNC = """
-def main():
-    module = vmware_httpapi.VmwareRestModule(
-        argument_spec=prepare_argument_spec(),
-        #supports_check_mode=True,
-        #is_multipart=True,
-    )
+#     def gen_entry_point_func(self):
+#         FUNC = """
+# async def entry_point(module, session):
+#     async with session.get(url(module.params)) as resp:
+#         return update_changed_flag(await resp.json())
+# """
+#         return ast.parse(FUNC).body[0]
 
-    globals()["_" + module.params['state']](module)
-    module.exit()
+    def gen_entry_point_func(self):
+        MAIN_FUNC = """
+async def entry_point(module, session):
+    print("Running {name}")
+    func = globals()["_" + module.params['state']]
+    return await func(module.params, session)
 """
-        main_func = ast.parse(MAIN_FUNC)
+        main_func = ast.parse(MAIN_FUNC.format(name=self.name))
 
         for operation in self.default_operationIds:
             (verb, path, _) = self.resource.operations[operation]
@@ -370,17 +455,26 @@ def main():
                 continue
 
             FUNC_NO_DATA_TPL = """
-def _{operation}(module):
-    module.{verb}(url="{path}".format(**module.params) + vmware_httpapi.gen_args(module, IN_QUERY_PARAMETER))
+async def _{operation}(params, session):
+    url = "https://{{vcenter_hostname}}{path}".format(**params) + gen_args(params, IN_QUERY_PARAMETER)
+    async with session.{verb}(url) as resp:
+        if await resp.text() == "":
+            return {{}}
+        return await update_changed_flag(resp, "{operation}")
 """
             FUNC_WITH_DATA_TPL = """
-def _{operation}(module):
+async def _{operation}(params, session):
     accepted_fields = []
     spec = {{}}
     for i in accepted_fields:
-        if module.params[i]:
-            spec[i] = module.params[i]
-    module.{verb}(url="{path}".format(**module.params), data={{'spec': spec}})
+        if params[i]:
+            spec[i] = params[i]
+    url = "https://{{vcenter_hostname}}{path}".format(**params)
+    async with session.{verb}(url, json={{'spec': spec}}) as resp:
+        if await resp.text() == "":
+            return {{}}
+
+        return await update_changed_flag(resp, "{operation}")
 """
 
             data_accepted_fields = []
@@ -415,18 +509,18 @@ def _{operation}(module):
 class AnsibleInfoModule(AnsibleModuleBase):
 
     URL_WITH_LIST = """
-if module.params['{list_index}']:
-    return "{path}".format(**module.params) + vmware_httpapi.gen_args(module, IN_QUERY_PARAMETER)
+if params['{list_index}']:
+    return "https://{{vcenter_hostname}}{path}".format(**params) + gen_args(params, IN_QUERY_PARAMETER)
 else:
-    return "{list_path}".format(**module.params) + vmware_httpapi.gen_args(module, IN_QUERY_PARAMETER)
+    return "https://{{vcenter_hostname}}{list_path}".format(**params) + gen_args(params, IN_QUERY_PARAMETER)
 """
 
     URL_LIST_ONLY = """
-return "{list_path}".format(**module.params) + vmware_httpapi.gen_args(module, IN_QUERY_PARAMETER)
+return "https://{{vcenter_hostname}}{list_path}".format(**params) + gen_args(params, IN_QUERY_PARAMETER)
 """
 
     URL = """
-return "{path}".format(**module.params) + vmware_httpapi.gen_args(module, IN_QUERY_PARAMETER)
+return "https://{{vcenter_hostname}}{path}".format(**params) + gen_args(params, IN_QUERY_PARAMETER)
 """
 
     def __init__(self, resource, definitions):
@@ -474,18 +568,14 @@ return "{path}".format(**module.params) + vmware_httpapi.gen_args(module, IN_QUE
             url_func = ast.parse(self.URL.format(path=path)).body[0]
         return url_func
 
-    def gen_main_func(self):
-        MAIN_FUNC = """
-def main():
-    module = vmware_httpapi.VmwareRestModule(
-        argument_spec=prepare_argument_spec(),
-        supports_check_mode=True,
-        is_multipart=True,
-    )
-    module.get(url=url(module))
-    module.exit()
+    def gen_entry_point_func(self):
+        FUNC = """
+async def entry_point(module, session):
+    print("Running {name}")
+    async with session.get(url(module.params)) as resp:
+        return await update_changed_flag(resp, "get")
 """
-        return ast.parse(MAIN_FUNC).body[0]
+        return ast.parse(FUNC.format(name=self.name)).body[0]
 
     def write_functional_tests(self):
         base_dir = pathlib.Path(

@@ -1,175 +1,37 @@
 - appliance_networking_interfaces_info:
-# - appliance_ntp:
-#     state: set
-#     servers:
-#       - "0.ca.pool.ntp.org"
 
 - vcenter_cluster_info:
 
-- register: existing_vms
-  vcenter_vm_info:
-
-- vcenter_vm_power:
-    state: stop
-    vm: '{{ item.vm }}'
-  with_items: "{{ existing_vms.result.value }}"
-
-- vcenter_vm:
-    state: delete
-    vm: '{{ item.vm }}'
-  with_items: "{{ existing_vms.result.value }}"
-
-- register: existing_datacenters
-  vcenter_datacenter_info:
-- debug: var=existing_datacenters
-- vcenter_datacenter:
-    state: delete
-    datacenter: '{{ item.datacenter }}'
-    force: true
-  with_items: "{{ existing_datacenters.result.value }}"
-
-- vcenter_folder_info:
-  register: my_folder_result
-
-- set_fact:
-      my_datacenter_folder: '{{ my_folder_result.result.value|selectattr("type", "equalto", "DATACENTER")|first }}'
-
-- vcenter_datacenter:
-    name: my_dc
-    folder: "{{ my_datacenter_folder.folder }}"
-    state: create
-
-- vcenter_datacenter_info:
-  register: my_datacenter_list
-
-- vcenter_folder_info:
-  register: my_folder_result
-- debug: var=my_folder_result.result.value
-
-- set_fact:
-    my_datacenter_folder: '{{ my_folder_result.result.value|selectattr("type", "equalto", "DATACENTER")|first }}'
-    my_virtual_machine_folder: '{{ my_folder_result.result.value|selectattr("type", "equalto", "VIRTUAL_MACHINE")|first }}'
-    my_datastore_folder: '{{ my_folder_result.result.value|selectattr("type", "equalto", "DATASTORE")|first }}'
-    my_host_folder: '{{ my_folder_result.result.value|selectattr("type", "equalto", "HOST")|first }}'
-
-- register: my_dc_result_info
-  vcenter_datacenter_info:
-
-- debug: var=my_dc_result_info
-- debug: var=my_host_folder
-
-- name: Create Cluster
-  vmware_cluster:
-    hostname: vcenter.test
-    username: administrator@vsphere.local
-    password: "{{ lookup('file', '/tmp/vcenter/tmp/vcenter_password.txt') }}"
-    datacenter_name: my_dc
-    cluster_name: my_cluster
-    validate_certs: no
-
-- name: Add ESXi in the cluster
-  vmware_host:
-    hostname: vcenter.test
-    username: administrator@vsphere.local
-    password: "{{ lookup('file', '/tmp/vcenter/tmp/vcenter_password.txt') }}"
-    datacenter: my_dc
-    cluster: my_cluster
-    esxi_hostname: '{{ item }}'
-    esxi_username: root
-    esxi_password: "{{ lookup('file', '/tmp/vcenter/tmp/esxi_password_root.txt') }}"
-    validate_certs: no
-  with_items:
-    - esxi1.test
-    - esxi2.test
-
-#- vcenter_vcha_cluster:
-#     state: deploy
-#   register: my_cluster_result
-
-- vcenter_folder_info:
-  register: my_folder_result
-- debug: var=my_folder_result.result.value
-
-- vcenter_host:
-    hostname: '{{ item }}'
-    password: "{{ lookup('file', '/tmp/vcenter/tmp/esxi_password_root.txt') }}"
-    user_name: root
-    thumbprint_verification: 'NONE'
-    state: create
-    #cluster_name : my_cluster
-    folder: '{{ my_host_folder.folder }}'
-  with_items:
-    - esxi1.test
-    - esxi2.test
-
-- name: Mount NFS (ro_datastore) datastores to ESXi
-  vmware_host_datastore:
-    hostname: vcenter.test
-    username: administrator@vsphere.local
-    password: "{{ lookup('file', '/tmp/vcenter/tmp/vcenter_password.txt') }}"
-    esxi_hostname: '{{ item }}'
-    datastore_name: ro_datastore
-    datastore_type: nfs
-    nfs_server: datastore.test
-    nfs_path: /srv/share/isos
-    nfs_ro: true
-    state: present
-    validate_certs: no
-  with_items:
-    - esxi1.test
-    - esxi2.test
-
-- name: Mount NFS (rw_datastore) datastores on the ESXi
-  vmware_host_datastore:
-    hostname: vcenter.test
-    username: administrator@vsphere.local
-    password: "{{ lookup('file', '/tmp/vcenter/tmp/vcenter_password.txt') }}"
-    esxi_hostname: '{{ item }}'
-    datastore_name: rw_datastore
-    datastore_type: nfs
-    nfs_server: datastore.test
-    nfs_path: /srv/share/vms
-    nfs_ro: false
-    state: present
-    validate_certs: no
-  with_items:
-    - esxi1.test
-    - esxi2.test
+# - import_tasks: purge_vms.yaml
+# - import_tasks: cleanup.yaml
+- import_tasks: prepare.yaml
 
 - vcenter_cluster_info:
-  register: my_cluster_result
-- debug: var=my_cluster_result.result.value
-
+  register: all_the_clusters
 - vcenter_datastore_info:
-  register: my_datastore_result
-- debug: var=my_datastore_result.result.value
+  register: my_datastore_value
+- vcenter_folder_info:
+  register: my_folder_value
+- vcenter_cluster_info:
+    cluster: "{{ all_the_clusters.value[0].cluster }}"
+  register: my_cluster_info
 
 - set_fact:
-    rw_datastore: '{{ my_datastore_result.result.value|selectattr("name", "equalto", "local")|first }}'
-
-- vcenter_network_info:
-  register: my_network_result
-- debug: var=my_network_result.result.value
-
-- register: test_vm1
-  vcenter_vm_info:
-    filter.names:
-    - test_vm1
-
-- vcenter_cluster_info:
-    cluster: "{{ my_cluster_result.result.value[0].cluster }}"
-  register: my_cluster_info
-- debug: var=my_cluster_info
+    rw_datastore: '{{ my_datastore_value.value|selectattr("name", "equalto", "rw_datastore")|first }}'
+    my_virtual_machine_folder: '{{ my_folder_value.value|selectattr("type", "equalto", "VIRTUAL_MACHINE")|first }}'
 
 - vcenter_vm:
     placement:
-      cluster: "{{ my_cluster_result.result.value[0].cluster }}"
+      cluster: "{{ all_the_clusters.value[0].cluster }}"
       datastore: "{{ rw_datastore.datastore }}"
       folder: "{{ my_virtual_machine_folder.folder }}"
-      #host: "host-53"
-      resource_pool: "{{ my_cluster_info.result.value.resource_pool }}"
+      resource_pool: "{{ my_cluster_info.value.resource_pool }}"
     name: test_vm1
-    guest_OS: SLES_10
+    guest_OS: DEBIAN_8_64
+    hardware_version: VMX_11
+    memory:
+      hot_add_enabled: true
+      size_MiB: 1024
     state: create
 
 # TODO, filer are not functional yet
@@ -179,54 +41,75 @@
     - test_vm1
 
 - vcenter_vm_info:
-    vm: '{{ test_vm1.result.value[0].vm }}'
+    vm: '{{ test_vm1.value[0].vm }}'
+
+- vcenter_vm_hardware_adapter_sata_info:
+    vm: '{{ test_vm1.value[0].vm }}'
+
+# ETHERNET
+- vcenter_vm_hardware_ethernet:
+    state: create
+    vm: '{{ test_vm1.value[0].vm }}'
+    pci_slot_number: 4
+    backing:
+      distributed_switch_uuid: 5026ec1956b571d8-cad88207f7d9ca46
+      type: DISTRIBUTED_PORTGROUP
+
+- vcenter_vm_hardware_ethernet:
+    state: create
+    vm: '{{ test_vm1.value[0].vm }}'
+    pci_slot_number: 4
+
+# SATA CONTROLLER
+- vcenter_vm_hardware_adapter_sata:
+    state: create
+    vm: '{{ test_vm1.value[0].vm }}'
+    pci_slot_number: 1
 
 - vcenter_vm_hardware_adapter_sata:
     state: create
-    vm: '{{ test_vm1.result.value[0].vm }}'
+    vm: '{{ test_vm1.value[0].vm }}'
+    pci_slot_number: 1
 
+# CDROM
 - vcenter_vm_hardware_cdrom:
-    vm: '{{ test_vm1.result.value[0].vm }}'
+    vm: '{{ test_vm1.value[0].vm }}'
     type: SATA
+    sata:
+      bus: 0
+      unit: 2
     start_connected: true
     backing:
       iso_file: '[ro_datastore] fedora.iso'
       type: ISO_FILE
     state: create
 
-- vcenter_vm_hardware_adapter_sata:
-    vm: '{{ test_vm1.result.value[0].vm }}'
+- vcenter_vm_hardware_cdrom:
+    vm: '{{ test_vm1.value[0].vm }}'
+    type: SATA
+    sata:
+      bus: 0
+      unit: 2
+    start_connected: true
+    backing:
+      iso_file: '[ro_datastore] fedora.iso'
+      type: ISO_FILE
     state: create
 
 - vcenter_vm_hardware_boot_info:
-    vm: '{{ test_vm1.result.value[0].vm }}'
+    vm: '{{ test_vm1.value[0].vm }}'
 
 - vcenter_vm_hardware_boot:
-    vm: '{{ test_vm1.result.value[0].vm }}'
+    vm: '{{ test_vm1.value[0].vm }}'
     efi_legacy_boot: True
     type: EFI
     state: update
 
 - vcenter_vm_power:
     state: start
-    vm: '{{ test_vm1.result.value[0].vm }}'
+    vm: '{{ test_vm1.value[0].vm }}'
 
 - vcenter_vm_info:
-    vm: '{{ test_vm1.result.value[0].vm }}'
+    vm: '{{ test_vm1.value[0].vm }}'
 
-- vcenter_vm_tools_info:
-    vm: '{{ test_vm1.result.value[0].vm }}'
-  register: result_vm_tools_info
-  until: result_vm_tools_info.result.value.run_state != "NOT_RUNNING"
-  retries: 60
-  delay: 5
-
-- debug:
-    var: result_vm_tools_info
-
-- vcenter_vm_tools_installer_info:
-    vm: '{{ test_vm1.result.value[0].vm }}'
-
-# - vcenter_vm:
-#     state: delete
-#     vm: '{{ test_vm1.result.value[0].vm }}'
+- import_tasks: wait_for_test_vm1.yaml

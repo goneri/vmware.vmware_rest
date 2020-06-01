@@ -1,8 +1,8 @@
 - appliance_networking_interfaces_info:
-# - appliance_ntp:
-#     state: set
-#     servers:
-#       - "0.ca.pool.ntp.org"
+- appliance_ntp:
+    state: set
+    servers:
+      - "0.ca.pool.ntp.org"
 
 - vcenter_cluster_info:
 
@@ -227,6 +227,6 @@
 - vcenter_vm_tools_installer_info:
     vm: '{{ test_vm1.result.value[0].vm }}'
 
-# - vcenter_vm:
-#     state: delete
-#     vm: '{{ test_vm1.result.value[0].vm }}'
+- vcenter_vm:
+    state: delete
+    vm: '{{ test_vm1.result.value[0].vm }}'

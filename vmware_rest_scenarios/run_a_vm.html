@@ -1,0 +1,209 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>How to run a virtual machine &#8212; vmware_rest examples  documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="How to get information from a running virtual machine" href="vm_tool_information.html" />
+    <link rel="prev" title="How to modify a virtual machine" href="vm_hardware_tuning.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="how-to-run-a-virtual-machine">
+<span id="vmware-rest-run-a-vm"></span><h1>How to run a virtual machine<a class="headerlink" href="#how-to-run-a-virtual-machine" title="Permalink to this headline">¶</a></h1>
+<div class="contents local topic" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#introduction" id="id3">Introduction</a></p></li>
+<li><p><a class="reference internal" href="#power-information" id="id4">Power information</a></p>
+<ul>
+<li><p><a class="reference internal" href="#result" id="id5">Result</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#how-to-start-a-virtual-machine" id="id6">How to start a virtual machine</a></p>
+<ul>
+<li><p><a class="reference internal" href="#id1" id="id7">Result</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#how-to-wait-until-my-virtual-machine-is-ready" id="id8">How to wait until my virtual machine is ready</a></p>
+<ul>
+<li><p><a class="reference internal" href="#id2" id="id9">Result</a></p></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="introduction">
+<h2><a class="toc-backref" href="#id3">Introduction</a><a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<p>This section covers the power management of your virtual machine.</p>
+</div>
+<div class="section" id="power-information">
+<h2><a class="toc-backref" href="#id4">Power information</a><a class="headerlink" href="#power-information" title="Permalink to this headline">¶</a></h2>
+<p>Use <code class="docutils literal notranslate"><span class="pre">vcenter_vm_power_info</span></code> to know the power state of the VM.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">Get</span> <span class="n">guest</span> <span class="n">power</span> <span class="n">information</span>
+  <span class="n">vcenter_vm_power_info</span><span class="p">:</span>
+    <span class="n">vm</span><span class="p">:</span> <span class="s1">&#39;{{ test_vm1_info.id }}&#39;</span>
+  <span class="n">register</span><span class="p">:</span> <span class="n">_result</span>
+</pre></div>
+</div>
+<div class="section" id="result">
+<h3><a class="toc-backref" href="#id5">Result</a><a class="headerlink" href="#result" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;state&quot;</span><span class="p">:</span> <span class="s2">&quot;POWERED_ON&quot;</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;changed&quot;</span><span class="p">:</span> <span class="n">false</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="how-to-start-a-virtual-machine">
+<h2><a class="toc-backref" href="#id6">How to start a virtual machine</a><a class="headerlink" href="#how-to-start-a-virtual-machine" title="Permalink to this headline">¶</a></h2>
+<p>Use the <code class="docutils literal notranslate"><span class="pre">vcenter_vm_power</span></code> module to start your VM:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">Turn</span> <span class="n">the</span> <span class="n">power</span> <span class="n">of</span> <span class="n">the</span> <span class="n">VM</span> <span class="n">on</span>
+  <span class="n">vcenter_vm_power</span><span class="p">:</span>
+    <span class="n">state</span><span class="p">:</span> <span class="n">start</span>
+    <span class="n">vm</span><span class="p">:</span> <span class="s1">&#39;{{ test_vm1_info.id }}&#39;</span>
+</pre></div>
+</div>
+<div class="section" id="id1">
+<h3><a class="toc-backref" href="#id7">Result</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s2">&quot;changed&quot;</span><span class="p">:</span> <span class="n">false</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="how-to-wait-until-my-virtual-machine-is-ready">
+<h2><a class="toc-backref" href="#id8">How to wait until my virtual machine is ready</a><a class="headerlink" href="#how-to-wait-until-my-virtual-machine-is-ready" title="Permalink to this headline">¶</a></h2>
+<p>If your virtual machine runs VMware Tools, you can build a loop
+around the <code class="docutils literal notranslate"><span class="pre">center_vm_tools_info</span></code> module:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">Wait</span> <span class="n">until</span> <span class="n">my</span> <span class="n">VM</span> <span class="ow">is</span> <span class="n">ready</span>
+  <span class="n">vcenter_vm_tools_info</span><span class="p">:</span>
+    <span class="n">vm</span><span class="p">:</span> <span class="s1">&#39;{{ test_vm1_info.id }}&#39;</span>
+  <span class="n">register</span><span class="p">:</span> <span class="n">vm_tools_info</span>
+  <span class="n">until</span><span class="p">:</span>
+  <span class="o">-</span> <span class="n">vm_tools_info</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">failed</span>
+  <span class="o">-</span> <span class="n">vm_tools_info</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">run_state</span> <span class="o">!=</span> <span class="s2">&quot;NOT_RUNNING&quot;</span>
+  <span class="n">retries</span><span class="p">:</span> <span class="mi">60</span>
+  <span class="n">delay</span><span class="p">:</span> <span class="mi">5</span>
+</pre></div>
+</div>
+<div class="section" id="id2">
+<h3><a class="toc-backref" href="#id9">Result</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;auto_update_supported&quot;</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
+        <span class="s2">&quot;upgrade_policy&quot;</span><span class="p">:</span> <span class="s2">&quot;MANUAL&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;install_attempt_count&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s2">&quot;version_status&quot;</span><span class="p">:</span> <span class="s2">&quot;UNMANAGED&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;version_number&quot;</span><span class="p">:</span> <span class="mi">10346</span><span class="p">,</span>
+        <span class="s2">&quot;run_state&quot;</span><span class="p">:</span> <span class="s2">&quot;RUNNING&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;10346&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;install_type&quot;</span><span class="p">:</span> <span class="s2">&quot;OPEN_VM_TOOLS&quot;</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;changed&quot;</span><span class="p">:</span> <span class="n">false</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">vmware_rest examples</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">vmware.vmware_rest documentation</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../guide_vmware_rest.html">VMware REST Scenarios</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../docs.html">Manual of the vmware.vmware_rest modules</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="../guide_vmware_rest.html">VMware REST Scenarios</a><ul>
+      <li>Previous: <a href="vm_hardware_tuning.html" title="previous chapter">How to modify a virtual machine</a></li>
+      <li>Next: <a href="vm_tool_information.html" title="next chapter">How to get information from a running virtual machine</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Ansible contributors.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.2.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/vmware_rest_scenarios/run_a_vm.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

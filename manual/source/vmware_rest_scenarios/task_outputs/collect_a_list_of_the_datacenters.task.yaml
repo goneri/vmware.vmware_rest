@@ -1,3 +1,0 @@
-- name: collect a list of the datacenters
-  vcenter_datacenter_info:
-  register: my_datacenters

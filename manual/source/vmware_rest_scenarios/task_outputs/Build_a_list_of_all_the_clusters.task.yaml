@@ -1,3 +1,0 @@
-- name: Build a list of all the clusters
-  vcenter_cluster_info:
-  register: all_the_clusters

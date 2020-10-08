@@ -1,4 +1,0 @@
-- name: Get a list of the networks with a filter
-  vcenter_network_info:
-    filter_types: STANDARD_PORTGROUP
-  register: my_standard_portgroup_value

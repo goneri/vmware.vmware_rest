@@ -1,6 +1,0 @@
-vcrpy
-antsibull_changelog
-
-# functional tests
-requests
-pyvmomi

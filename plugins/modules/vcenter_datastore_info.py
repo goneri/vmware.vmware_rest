@@ -93,14 +93,6 @@ requirements:
 """
 
 EXAMPLES = """
-- name: Retrieve a list of all the datastores
-  vcenter_datastore_info:
-  register: my_datastores
-- name: We can also use filter to limit the number of result
-  vcenter_datastore_info:
-    filter_names:
-    - rw_datastore
-  register: my_datastores
 """
 
 RETURN = """

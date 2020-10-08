@@ -1,0 +1,340 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>How to get information from a running virtual machine &#8212; vmware_rest examples  documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="How to configure the VMware tools of a running virtual machine" href="vm_tool_configuration.html" />
+    <link rel="prev" title="How to run a virtual machine" href="run_a_vm.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="how-to-get-information-from-a-running-virtual-machine">
+<span id="vmware-rest-vm-tool-information"></span><h1>How to get information from a running virtual machine<a class="headerlink" href="#how-to-get-information-from-a-running-virtual-machine" title="Permalink to this headline">¶</a></h1>
+<div class="contents local topic" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#introduction" id="id5">Introduction</a></p></li>
+<li><p><a class="reference internal" href="#scenario-requirements" id="id6">Scenario requirements</a></p></li>
+<li><p><a class="reference internal" href="#how-to-collect-information" id="id7">How to collect information</a></p>
+<ul>
+<li><p><a class="reference internal" href="#filesystem" id="id8">Filesystem</a></p>
+<ul>
+<li><p><a class="reference internal" href="#result" id="id9">Result</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#guest-identity" id="id10">Guest identity</a></p>
+<ul>
+<li><p><a class="reference internal" href="#id1" id="id11">Result</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#network" id="id12">Network</a></p>
+<ul>
+<li><p><a class="reference internal" href="#id2" id="id13">Result</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#network-interfaces" id="id14">Network interfaces</a></p>
+<ul>
+<li><p><a class="reference internal" href="#id3" id="id15">Result</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#network-routes" id="id16">Network routes</a></p>
+<ul>
+<li><p><a class="reference internal" href="#id4" id="id17">Result</a></p></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="introduction">
+<h2><a class="toc-backref" href="#id5">Introduction</a><a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<p>This section shows you how to collection information from a running virtual machine.</p>
+</div>
+<div class="section" id="scenario-requirements">
+<h2><a class="toc-backref" href="#id6">Scenario requirements</a><a class="headerlink" href="#scenario-requirements" title="Permalink to this headline">¶</a></h2>
+<p>You’ve already followed <a class="reference internal" href="run_a_vm.html#vmware-rest-run-a-vm"><span class="std std-ref">How to run a virtual machine</span></a> and your virtual machine runs VMware Tools.</p>
+</div>
+<div class="section" id="how-to-collect-information">
+<h2><a class="toc-backref" href="#id7">How to collect information</a><a class="headerlink" href="#how-to-collect-information" title="Permalink to this headline">¶</a></h2>
+<p>In this example, we use the <code class="docutils literal notranslate"><span class="pre">vcenter_vm_guest_*</span></code> module to collect information about the associated resources.</p>
+<div class="section" id="filesystem">
+<h3><a class="toc-backref" href="#id8">Filesystem</a><a class="headerlink" href="#filesystem" title="Permalink to this headline">¶</a></h3>
+<p>Here we use <code class="docutils literal notranslate"><span class="pre">vcenter_vm_guest_localfilesystem_info</span></code> to retrieve the details
+about the filesystem of the guest. In this example we also use a <code class="docutils literal notranslate"><span class="pre">retries</span></code>
+loop. The VMware Tools may take a bit of time to start and by doing so, we give
+the VM a bit more time.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">Get</span> <span class="n">guest</span> <span class="n">filesystem</span> <span class="n">information</span>
+  <span class="n">vcenter_vm_guest_localfilesystem_info</span><span class="p">:</span>
+    <span class="n">vm</span><span class="p">:</span> <span class="s1">&#39;{{ test_vm1_info.id }}&#39;</span>
+  <span class="n">register</span><span class="p">:</span> <span class="n">_result</span>
+  <span class="n">until</span><span class="p">:</span>
+  <span class="o">-</span> <span class="n">_result</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">failed</span>
+  <span class="n">retries</span><span class="p">:</span> <span class="mi">60</span>
+  <span class="n">delay</span><span class="p">:</span> <span class="mi">5</span>
+</pre></div>
+</div>
+<div class="section" id="result">
+<h4><a class="toc-backref" href="#id9">Result</a><a class="headerlink" href="#result" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;mappings&quot;</span><span class="p">:</span> <span class="p">[],</span>
+                <span class="s2">&quot;free_space&quot;</span><span class="p">:</span> <span class="mi">774766592</span><span class="p">,</span>
+                <span class="s2">&quot;capacity&quot;</span><span class="p">:</span> <span class="mi">2515173376</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;/&quot;</span>
+        <span class="p">}</span>
+    <span class="p">],</span>
+    <span class="s2">&quot;changed&quot;</span><span class="p">:</span> <span class="n">false</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="guest-identity">
+<h3><a class="toc-backref" href="#id10">Guest identity</a><a class="headerlink" href="#guest-identity" title="Permalink to this headline">¶</a></h3>
+<p>You can use <code class="docutils literal notranslate"><span class="pre">vcenter_vm_guest_identity_info</span></code> to get details like the OS family or the hostname of the running VM.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">Get</span> <span class="n">guest</span> <span class="n">identity</span> <span class="n">information</span>
+  <span class="n">vcenter_vm_guest_identity_info</span><span class="p">:</span>
+    <span class="n">vm</span><span class="p">:</span> <span class="s1">&#39;{{ test_vm1_info.id }}&#39;</span>
+  <span class="n">register</span><span class="p">:</span> <span class="n">_result</span>
+</pre></div>
+</div>
+<div class="section" id="id1">
+<h4><a class="toc-backref" href="#id11">Result</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;full_name&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;args&quot;</span><span class="p">:</span> <span class="p">[],</span>
+            <span class="s2">&quot;default_message&quot;</span><span class="p">:</span> <span class="s2">&quot;Red Hat Fedora (64-bit)&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;vmsg.guestos.fedora64Guest.label&quot;</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;FEDORA_64&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;ip_address&quot;</span><span class="p">:</span> <span class="s2">&quot;192.168.122.165&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;family&quot;</span><span class="p">:</span> <span class="s2">&quot;LINUX&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;host_name&quot;</span><span class="p">:</span> <span class="s2">&quot;localhost.localdomain&quot;</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;changed&quot;</span><span class="p">:</span> <span class="n">false</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="network">
+<h3><a class="toc-backref" href="#id12">Network</a><a class="headerlink" href="#network" title="Permalink to this headline">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">vcenter_vm_guest_networking_info</span></code> will return the OS network configuration.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">Get</span> <span class="n">guest</span> <span class="n">networking</span> <span class="n">information</span>
+  <span class="n">vcenter_vm_guest_networking_info</span><span class="p">:</span>
+    <span class="n">vm</span><span class="p">:</span> <span class="s1">&#39;{{ test_vm1_info.id }}&#39;</span>
+  <span class="n">register</span><span class="p">:</span> <span class="n">_result</span>
+</pre></div>
+</div>
+<div class="section" id="id2">
+<h4><a class="toc-backref" href="#id13">Result</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;dns&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;ip_addresses&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="s2">&quot;10.0.2.3&quot;</span>
+            <span class="p">],</span>
+            <span class="s2">&quot;search_domains&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="s2">&quot;localdomain&quot;</span>
+            <span class="p">]</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;dns_values&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;domain_name&quot;</span><span class="p">:</span> <span class="s2">&quot;localdomain&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;host_name&quot;</span><span class="p">:</span> <span class="s2">&quot;localhost.localdomain&quot;</span>
+        <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;changed&quot;</span><span class="p">:</span> <span class="n">false</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="network-interfaces">
+<h3><a class="toc-backref" href="#id14">Network interfaces</a><a class="headerlink" href="#network-interfaces" title="Permalink to this headline">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">vcenter_vm_guest_networking_interfaces_info</span></code> will return a list of NIC configurations.</p>
+<p>See also <a class="reference internal" href="vm_hardware_tuning.html#vmware-rest-attach-a-network"><span class="std std-ref">How to attach a VM to a network</span></a>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">Get</span> <span class="n">guest</span> <span class="n">network</span> <span class="n">interfaces</span> <span class="n">information</span>
+  <span class="n">vcenter_vm_guest_networking_interfaces_info</span><span class="p">:</span>
+    <span class="n">vm</span><span class="p">:</span> <span class="s1">&#39;{{ test_vm1_info.id }}&#39;</span>
+  <span class="n">register</span><span class="p">:</span> <span class="n">_result</span>
+</pre></div>
+</div>
+<div class="section" id="id3">
+<h4><a class="toc-backref" href="#id15">Result</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;mac_address&quot;</span><span class="p">:</span> <span class="s2">&quot;00:50:56:b3:7a:1d&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;ip&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;ip_addresses&quot;</span><span class="p">:</span> <span class="p">[</span>
+                    <span class="p">{</span>
+                        <span class="s2">&quot;ip_address&quot;</span><span class="p">:</span> <span class="s2">&quot;192.168.122.165&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;prefix_length&quot;</span><span class="p">:</span> <span class="mi">24</span><span class="p">,</span>
+                        <span class="s2">&quot;state&quot;</span><span class="p">:</span> <span class="s2">&quot;PREFERRED&quot;</span>
+                    <span class="p">},</span>
+                    <span class="p">{</span>
+                        <span class="s2">&quot;ip_address&quot;</span><span class="p">:</span> <span class="s2">&quot;fe80::6c6a:fac6:441f:6061&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;prefix_length&quot;</span><span class="p">:</span> <span class="mi">64</span><span class="p">,</span>
+                        <span class="s2">&quot;state&quot;</span><span class="p">:</span> <span class="s2">&quot;UNKNOWN&quot;</span>
+                    <span class="p">}</span>
+                <span class="p">]</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;nic&quot;</span><span class="p">:</span> <span class="s2">&quot;4000&quot;</span>
+        <span class="p">}</span>
+    <span class="p">],</span>
+    <span class="s2">&quot;changed&quot;</span><span class="p">:</span> <span class="n">false</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="network-routes">
+<h3><a class="toc-backref" href="#id16">Network routes</a><a class="headerlink" href="#network-routes" title="Permalink to this headline">¶</a></h3>
+<p>Use <code class="docutils literal notranslate"><span class="pre">vcenter_vm_guest_networking_routes_info</span></code> to explore the route table of your vitual machine.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">Get</span> <span class="n">guest</span> <span class="n">network</span> <span class="n">routes</span> <span class="n">information</span>
+  <span class="n">vcenter_vm_guest_networking_routes_info</span><span class="p">:</span>
+    <span class="n">vm</span><span class="p">:</span> <span class="s1">&#39;{{ test_vm1_info.id }}&#39;</span>
+  <span class="n">register</span><span class="p">:</span> <span class="n">_result</span>
+</pre></div>
+</div>
+<div class="section" id="id4">
+<h4><a class="toc-backref" href="#id17">Result</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;gateway_address&quot;</span><span class="p">:</span> <span class="s2">&quot;192.168.122.1&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;interface_index&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s2">&quot;prefix_length&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s2">&quot;network&quot;</span><span class="p">:</span> <span class="s2">&quot;0.0.0.0&quot;</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;interface_index&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s2">&quot;prefix_length&quot;</span><span class="p">:</span> <span class="mi">24</span><span class="p">,</span>
+            <span class="s2">&quot;network&quot;</span><span class="p">:</span> <span class="s2">&quot;192.168.122.0&quot;</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;interface_index&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s2">&quot;prefix_length&quot;</span><span class="p">:</span> <span class="mi">64</span><span class="p">,</span>
+            <span class="s2">&quot;network&quot;</span><span class="p">:</span> <span class="s2">&quot;fe80::&quot;</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;interface_index&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s2">&quot;prefix_length&quot;</span><span class="p">:</span> <span class="mi">128</span><span class="p">,</span>
+            <span class="s2">&quot;network&quot;</span><span class="p">:</span> <span class="s2">&quot;fe80::6c6a:fac6:441f:6061&quot;</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;interface_index&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s2">&quot;prefix_length&quot;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+            <span class="s2">&quot;network&quot;</span><span class="p">:</span> <span class="s2">&quot;ff00::&quot;</span>
+        <span class="p">}</span>
+    <span class="p">],</span>
+    <span class="s2">&quot;changed&quot;</span><span class="p">:</span> <span class="n">false</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">vmware_rest examples</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">vmware.vmware_rest documentation</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../guide_vmware_rest.html">VMware REST Scenarios</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../docs.html">Manual of the vmware.vmware_rest modules</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="../guide_vmware_rest.html">VMware REST Scenarios</a><ul>
+      <li>Previous: <a href="run_a_vm.html" title="previous chapter">How to run a virtual machine</a></li>
+      <li>Next: <a href="vm_tool_configuration.html" title="next chapter">How to configure the VMware tools of a running virtual machine</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Ansible contributors.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.2.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/vmware_rest_scenarios/vm_tool_information.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

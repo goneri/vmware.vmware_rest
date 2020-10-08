@@ -122,27 +122,6 @@ requirements:
 """
 
 EXAMPLES = """
-- name: Look up the VM called test_vm1 in the inventory
-  register: search_result
-  vcenter_vm_info:
-    filter_names:
-    - test_vm1
-- name: Collect information about a specific VM
-  vcenter_vm_info:
-    vm: '{{ search_result.value[0].vm }}'
-  register: test_vm1_info
-- name: Collect the list of the existing VM
-  vcenter_vm_info:
-  register: existing_vms
-  until: existing_vms is not failed
-- name: Look up the VM called test_vm1 in the inventory
-  register: search_result
-  vcenter_vm_info:
-    filter_names:
-    - test_vm1
-- name: Search with an invalid filter
-  vcenter_vm_info:
-    filter_names: test_vm1_does_not_exists
 """
 
 RETURN = """

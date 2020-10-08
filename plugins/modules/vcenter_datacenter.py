@@ -84,23 +84,6 @@ requirements:
 """
 
 EXAMPLES = """
-- name: Get a list of all the datacenters
-  register: existing_datacenters
-  vcenter_datacenter_info:
-- name: Set my_datacenter_folder
-  set_fact:
-    my_datacenter_folder: '{{ my_folders.value|selectattr("type", "equalto", "DATACENTER")|first
-      }}'
-- name: Create datacenter my_dc
-  vcenter_datacenter:
-    name: my_dc
-    folder: '{{ my_datacenter_folder.folder }}'
-- name: Force delete the existing DC
-  vcenter_datacenter:
-    state: absent
-    datacenter: '{{ item.datacenter }}'
-    force: true
-  with_items: '{{ existing_datacenters.value }}'
 """
 
 RETURN = """

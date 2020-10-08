@@ -88,13 +88,6 @@ requirements:
 """
 
 EXAMPLES = """
-- name: Get a list of the networks
-  vcenter_network_info:
-  register: my_network_value
-- name: Get a list of the networks with a filter
-  vcenter_network_info:
-    filter_types: STANDARD_PORTGROUP
-  register: my_standard_portgroup_value
 """
 
 RETURN = """

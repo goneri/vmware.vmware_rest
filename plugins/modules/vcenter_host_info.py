@@ -106,9 +106,6 @@ requirements:
 """
 
 EXAMPLES = """
-- name: Get a list of the hosts
-  vcenter_host_info:
-  register: my_hosts
 """
 
 RETURN = """

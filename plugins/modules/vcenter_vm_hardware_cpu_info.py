@@ -57,13 +57,6 @@ requirements:
 """
 
 EXAMPLES = """
-- name: Collect information about a specific VM
-  vcenter_vm_info:
-    vm: '{{ search_result.value[0].vm }}'
-  register: test_vm1_info
-- name: Retrieve the CPU information from the VM
-  vcenter_vm_hardware_cpu_info:
-    vm: '{{ test_vm1_info.id }}'
 """
 
 RETURN = """

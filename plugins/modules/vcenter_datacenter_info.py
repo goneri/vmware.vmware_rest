@@ -79,15 +79,6 @@ requirements:
 """
 
 EXAMPLES = """
-- name: Get a list of all the datacenters
-  register: existing_datacenters
-  vcenter_datacenter_info:
-- name: Get a list of all the datacenters
-  register: existing_datacenters
-  vcenter_datacenter_info:
-- name: collect a list of the datacenters
-  vcenter_datacenter_info:
-  register: my_datacenters
 """
 
 RETURN = """

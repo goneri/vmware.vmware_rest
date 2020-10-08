@@ -71,21 +71,6 @@ requirements:
 """
 
 EXAMPLES = """
-- name: Collect information about a specific VM
-  vcenter_vm_info:
-    vm: '{{ search_result.value[0].vm }}'
-  register: test_vm1_info
-- name: Change vm-tools upgrade policy to MANUAL
-  vcenter_vm_tools:
-    vm: '{{ test_vm1_info.id }}'
-    upgrade_policy: MANUAL
-- name: Change vm-tools upgrade policy to UPGRADE_AT_POWER_CYCLE
-  vcenter_vm_tools:
-    vm: '{{ test_vm1_info.id }}'
-    upgrade_policy: UPGRADE_AT_POWER_CYCLE
-- name: Retrive vm-tools information
-  vcenter_vm_tools:
-    vm: '{{ test_vm1_info.id }}'
 """
 
 RETURN = """

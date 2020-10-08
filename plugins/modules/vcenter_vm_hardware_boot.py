@@ -109,15 +109,6 @@ requirements:
 """
 
 EXAMPLES = """
-- name: Collect information about a specific VM
-  vcenter_vm_info:
-    vm: '{{ search_result.value[0].vm }}'
-  register: test_vm1_info
-- name: Change a VM boot parameters
-  vcenter_vm_hardware_boot:
-    vm: '{{ test_vm1_info.id }}'
-    efi_legacy_boot: true
-    type: EFI
 """
 
 RETURN = """

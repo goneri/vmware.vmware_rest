@@ -115,25 +115,6 @@ requirements:
 """
 
 EXAMPLES = """
-- name: define ESXi list
-  set_fact:
-    my_esxis:
-    - hostname: "{{ lookup('env', 'ESXI1_HOSTNAME') }}"
-      username: "{{ lookup('env', 'ESXI1_USERNAME') }}"
-      password: "{{ lookup('env', 'ESXI1_PASSWORD') }}"
-- name: Look up the different folders
-  set_fact:
-    my_host_folder: '{{ my_folders.value|selectattr("type", "equalto", "HOST")|first
-      }}'
-- name: Connect the host(s)
-  vcenter_host:
-    hostname: '{{ item.hostname }}'
-    password: '{{ item.password }}'
-    user_name: '{{ item.username }}'
-    thumbprint_verification: NONE
-    folder: '{{ my_host_folder.folder }}'
-  no_log: true
-  with_items: '{{ my_esxis}}'
 """
 
 RETURN = """

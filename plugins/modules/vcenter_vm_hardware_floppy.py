@@ -106,25 +106,6 @@ requirements:
 """
 
 EXAMPLES = """
-- name: Add a floppy disk drive
-  vcenter_vm_hardware_floppy:
-    vm: '{{ test_vm1_info.id }}'
-    allow_guest_control: true
-  register: my_floppy_drive
-- name: Collect information about a specific VM
-  vcenter_vm_info:
-    vm: '{{ search_result.value[0].vm }}'
-  register: test_vm1_info
-- name: Add a floppy disk drive
-  vcenter_vm_hardware_floppy:
-    vm: '{{ test_vm1_info.id }}'
-    allow_guest_control: true
-  register: my_floppy_drive
-- name: Remove a floppy drive
-  vcenter_vm_hardware_floppy:
-    vm: '{{ test_vm1_info.id }}'
-    floppy: '{{ my_floppy_drive.id }}'
-    state: absent
 """
 
 RETURN = """

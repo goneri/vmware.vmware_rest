@@ -93,15 +93,6 @@ requirements:
 """
 
 EXAMPLES = """
-- name: Collect information about a specific VM
-  vcenter_vm_info:
-    vm: '{{ search_result.value[0].vm }}'
-  register: test_vm1_info
-- name: Upgrade the VM hardware version
-  vcenter_vm_hardware:
-    upgrade_policy: AFTER_CLEAN_SHUTDOWN
-    upgrade_version: VMX_13
-    vm: '{{ test_vm1_info.id }}'
 """
 
 RETURN = """

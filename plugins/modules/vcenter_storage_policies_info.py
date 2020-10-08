@@ -60,9 +60,6 @@ requirements:
 """
 
 EXAMPLES = """
-- name: List existing storage policies
-  vcenter_storage_policies_info:
-  register: storage_policies
 """
 
 RETURN = """

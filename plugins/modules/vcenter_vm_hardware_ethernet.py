@@ -176,33 +176,6 @@ requirements:
 """
 
 EXAMPLES = """
-- name: Collect information about a specific VM
-  vcenter_vm_info:
-    vm: '{{ search_result.value[0].vm }}'
-  register: test_vm1_info
-- name: Attach a VM to a dvswitch
-  vcenter_vm_hardware_ethernet:
-    vm: '{{ test_vm1_info.id }}'
-    pci_slot_number: 4
-    backing:
-      type: DISTRIBUTED_PORTGROUP
-      network: '{{ my_portgroup_info.dvs_portgroup_info.dvswitch1[0].key }}'
-    start_connected: false
-  register: vm_hardware_ethernet_1
-- name: Attach a VM to a dvswitch
-  vcenter_vm_hardware_ethernet:
-    vm: '{{ test_vm1_info.id }}'
-    pci_slot_number: 4
-    backing:
-      type: DISTRIBUTED_PORTGROUP
-      network: '{{ my_portgroup_info.dvs_portgroup_info.dvswitch1[0].key }}'
-    start_connected: false
-  register: vm_hardware_ethernet_1
-- name: Turn the NIC's start_connected flag on
-  vcenter_vm_hardware_ethernet:
-    nic: '{{ vm_hardware_ethernet_1.id }}'
-    start_connected: true
-    vm: '{{ test_vm1_info.id }}'
 """
 
 RETURN = """

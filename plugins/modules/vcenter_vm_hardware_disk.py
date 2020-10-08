@@ -159,29 +159,6 @@ requirements:
 """
 
 EXAMPLES = """
-- name: Create a new disk
-  vcenter_vm_hardware_disk:
-    vm: '{{ test_vm1_info.id }}'
-    type: SATA
-    new_vmdk:
-      capacity: 320000
-  register: my_new_disk
-- name: Collect information about a specific VM
-  vcenter_vm_info:
-    vm: '{{ search_result.value[0].vm }}'
-  register: test_vm1_info
-- name: Create a new disk
-  vcenter_vm_hardware_disk:
-    vm: '{{ test_vm1_info.id }}'
-    type: SATA
-    new_vmdk:
-      capacity: 320000
-  register: my_new_disk
-- name: Delete the disk
-  vcenter_vm_hardware_disk:
-    vm: '{{ test_vm1_info.id }}'
-    disk: '{{ my_new_disk.id }}'
-    state: absent
 """
 
 RETURN = """

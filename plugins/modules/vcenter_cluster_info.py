@@ -87,16 +87,6 @@ requirements:
 """
 
 EXAMPLES = """
-- name: Build a list of all the clusters
-  vcenter_cluster_info:
-  register: all_the_clusters
-- name: Build a list of all the clusters
-  vcenter_cluster_info:
-  register: all_the_clusters
-- name: Retrieve details about the first cluster
-  vcenter_cluster_info:
-    cluster: '{{ all_the_clusters.value[0].cluster }}'
-  register: my_cluster_info
 """
 
 RETURN = """

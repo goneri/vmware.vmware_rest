@@ -94,24 +94,6 @@ requirements:
 """
 
 EXAMPLES = """
-- name: Build a list of all the folders
-  vcenter_folder_info:
-  register: my_folders
-- name: Build a list of all the folders
-  vcenter_folder_info:
-  register: my_folders
-- name: Build a list of all the folders
-  vcenter_folder_info:
-  register: my_folders
-- name: Build a list of all the folders with the type VIRTUAL_MACHINE and called vm
-  vcenter_folder_info:
-    filter_type: VIRTUAL_MACHINE
-    filter_names:
-    - vm
-  register: my_folders
-- name: Build a list of the folders, with a filter
-  vcenter_folder_info:
-    filter_type: DATASTORE
 """
 
 RETURN = """

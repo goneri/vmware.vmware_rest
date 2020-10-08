@@ -1003,28 +1003,6 @@ requirements:
 """
 
 EXAMPLES = """
-- name: Collect the list of the existing VM
-  vcenter_vm_info:
-  register: existing_vms
-  until: existing_vms is not failed
-- name: Create a VM
-  vcenter_vm:
-    placement:
-      cluster: '{{ my_cluster_info.id }}'
-      datastore: '{{ my_datastore.datastore }}'
-      folder: '{{ my_virtual_machine_folder.folder }}'
-      resource_pool: '{{ my_cluster_info.value.resource_pool }}'
-    name: test_vm1
-    guest_OS: DEBIAN_8_64
-    hardware_version: VMX_11
-    memory:
-      hot_add_enabled: true
-      size_MiB: 1024
-- name: Delete some VM
-  vcenter_vm:
-    state: absent
-    vm: '{{ item.vm }}'
-  with_items: '{{ existing_vms.value }}'
 """
 
 RETURN = """

@@ -65,17 +65,6 @@ requirements:
 """
 
 EXAMPLES = """
-- name: Collect information about a specific VM
-  vcenter_vm_info:
-    vm: '{{ search_result.value[0].vm }}'
-  register: test_vm1_info
-- name: Retrieve disk information using the label
-  vcenter_vm_hardware_disk_info:
-    vm: '{{ test_vm1_info.id }}'
-    label: Hard disk 1
-- name: Retrieve the disk information from the VM
-  vcenter_vm_hardware_disk_info:
-    vm: '{{ test_vm1_info.id }}'
 """
 
 RETURN = """

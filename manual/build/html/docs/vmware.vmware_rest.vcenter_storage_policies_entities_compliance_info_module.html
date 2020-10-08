@@ -1,0 +1,259 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>vmware.vmware_rest.vcenter_storage_policies_entities_compliance_info &#8212; vmware_rest examples  documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="vmware.vmware_rest.vcenter_storage_policies_info" href="vmware.vmware_rest.vcenter_storage_policies_info_module.html" />
+    <link rel="prev" title="vmware.vmware_rest.vcenter_storage_policies_compliance_vm_info" href="vmware.vmware_rest.vcenter_storage_policies_compliance_vm_info_module.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="vmware-vmware-rest-vcenter-storage-policies-entities-compliance-info">
+<span id="vmware-vmware-rest-vcenter-storage-policies-entities-compliance-info-module"></span><h1>vmware.vmware_rest.vcenter_storage_policies_entities_compliance_info<a class="headerlink" href="#vmware-vmware-rest-vcenter-storage-policies-entities-compliance-info" title="Permalink to this headline">¶</a></h1>
+<p><strong>Collect the information associated with the vCenter storage policies entities compliances</strong></p>
+<p>Version added: 1.0.0</p>
+<div class="contents local topic" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#synopsis" id="id1">Synopsis</a></p></li>
+<li><p><a class="reference internal" href="#requirements" id="id2">Requirements</a></p></li>
+<li><p><a class="reference internal" href="#parameters" id="id3">Parameters</a></p></li>
+<li><p><a class="reference internal" href="#status" id="id4">Status</a></p></li>
+</ul>
+</div>
+<div class="section" id="synopsis">
+<h2><a class="toc-backref" href="#id1">Synopsis</a><a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Collect the information associated with the vCenter storage policies entities compliances</p></li>
+</ul>
+</div>
+<div class="section" id="requirements">
+<h2><a class="toc-backref" href="#id2">Requirements</a><a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h2>
+<p>The below requirements are needed on the host that executes this module.</p>
+<ul class="simple">
+<li><p>python &gt;= 3.6</p></li>
+<li><p>aiohttp</p></li>
+</ul>
+</div>
+<div class="section" id="parameters">
+<h2><a class="toc-backref" href="#id3">Parameters</a><a class="headerlink" href="#parameters" title="Permalink to this headline">¶</a></h2>
+<table  border=0 cellpadding=0 class="documentation-table">
+    <tr>
+        <th colspan="1">Parameter</th>
+        <th>Choices/<font color="blue">Defaults</font></th>
+        <th width="100%">Comments</th>
+    </tr>
+        <tr>
+            <td colspan="1">
+                <div class="ansibleOptionAnchor" id="parameter-"></div>
+                <b>filter_status</b>
+                <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                <div style="font-size: small">
+                    <span style="color: purple">list</span>
+                     / <span style="color: purple">elements=string</span>
+                </div>
+            </td>
+            <td>
+            </td>
+            <td>
+                    <div>Compliance Status that a virtual machine must have to match the filter.</div>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="1">
+                <div class="ansibleOptionAnchor" id="parameter-"></div>
+                <b>vcenter_hostname</b>
+                <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                <div style="font-size: small">
+                    <span style="color: purple">string</span>
+                     / <span style="color: red">required</span>
+                </div>
+            </td>
+            <td>
+            </td>
+            <td>
+                    <div>The hostname or IP address of the vSphere vCenter</div>
+                    <div>If the value is not specified in the task, the value of environment variable <code>VMWARE_HOST</code> will be used instead.</div>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="1">
+                <div class="ansibleOptionAnchor" id="parameter-"></div>
+                <b>vcenter_password</b>
+                <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                <div style="font-size: small">
+                    <span style="color: purple">string</span>
+                     / <span style="color: red">required</span>
+                </div>
+            </td>
+            <td>
+            </td>
+            <td>
+                    <div>The vSphere vCenter username</div>
+                    <div>If the value is not specified in the task, the value of environment variable <code>VMWARE_PASSWORD</code> will be used instead.</div>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="1">
+                <div class="ansibleOptionAnchor" id="parameter-"></div>
+                <b>vcenter_rest_log_file</b>
+                <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                <div style="font-size: small">
+                    <span style="color: purple">string</span>
+                </div>
+            </td>
+            <td>
+            </td>
+            <td>
+                    <div>You can use this optional parameter to set the location of a log file.</div>
+                    <div>This file will be used to record the HTTP REST interaction.</div>
+                    <div>The file will be stored on the host that run the module.</div>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="1">
+                <div class="ansibleOptionAnchor" id="parameter-"></div>
+                <b>vcenter_username</b>
+                <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                <div style="font-size: small">
+                    <span style="color: purple">string</span>
+                     / <span style="color: red">required</span>
+                </div>
+            </td>
+            <td>
+            </td>
+            <td>
+                    <div>The vSphere vCenter username</div>
+                    <div>If the value is not specified in the task, the value of environment variable <code>VMWARE_USER</code> will be used instead.</div>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="1">
+                <div class="ansibleOptionAnchor" id="parameter-"></div>
+                <b>vcenter_validate_certs</b>
+                <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                <div style="font-size: small">
+                    <span style="color: purple">boolean</span>
+                </div>
+            </td>
+            <td>
+                    <ul style="margin: 0; padding: 0"><b>Choices:</b>
+                                <li>no</li>
+                                <li><div style="color: blue"><b>yes</b>&nbsp;&larr;</div></li>
+                    </ul>
+            </td>
+            <td>
+                    <div>Allows connection when SSL certificates are not valid. Set to <code>false</code> when certificates are not trusted.</div>
+                    <div>If the value is not specified in the task, the value of environment variable <code>VMWARE_VALIDATE_CERTS</code> will be used instead.</div>
+            </td>
+        </tr>
+</table>
+<br/></div>
+<div class="section" id="status">
+<h2><a class="toc-backref" href="#id4">Status</a><a class="headerlink" href="#status" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="authors">
+<h3>Authors<a class="headerlink" href="#authors" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Goneri Le Bouder (&#64;goneri) &lt;<a class="reference external" href="mailto:goneri&#37;&#52;&#48;lebouder&#46;net">goneri<span>&#64;</span>lebouder<span>&#46;</span>net</a>&gt;</p></li>
+</ul>
+</div>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">vmware_rest examples</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">vmware.vmware_rest documentation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../guide_vmware_rest.html">VMware REST Scenarios</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../docs.html">Manual of the vmware.vmware_rest modules</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="../docs.html">Manual of the vmware.vmware_rest modules</a><ul>
+      <li>Previous: <a href="vmware.vmware_rest.vcenter_storage_policies_compliance_vm_info_module.html" title="previous chapter">vmware.vmware_rest.vcenter_storage_policies_compliance_vm_info</a></li>
+      <li>Next: <a href="vmware.vmware_rest.vcenter_storage_policies_info_module.html" title="next chapter">vmware.vmware_rest.vcenter_storage_policies_info</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Ansible contributors.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.2.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/docs/vmware.vmware_rest.vcenter_storage_policies_entities_compliance_info_module.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

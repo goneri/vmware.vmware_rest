@@ -3,6 +3,8 @@ import importlib
 from ansible.module_utils.basic import missing_required_lib
 from ansible.module_utils.parsing.convert_bool import boolean
 
+import q
+
 
 async def open_session(
     vcenter_hostname=None,
@@ -267,3 +269,130 @@ def get_device_type(url):
         return "port"
     else:
         return device_type
+
+
+async def folder_content(session, vcenter_hostname, datacenter, parent_folder):
+    url = (
+        "https://{vcenter_hostname}"
+        "/rest/vcenter/folder"
+        "?filter.datacenters={datacenter}&filter.parent_folders={parent_folder}"
+    ).format(vcenter_hostname=vcenter_hostname, datacenter=datacenter, parent_folder=parent_folder)
+    if parent_folder:
+        url += f""
+    async with session.get(url) as resp:
+        _json = await resp.json()
+        return _json["value"][0]["folder"], _json["value"][0]["type"]
+
+
+async def folder_to_moid(session, vcenter_hostname, datacenter, name, parent_folder=None):
+    url = (
+        "https://{vcenter_hostname}"
+        "/rest/vcenter/folder"
+        "?filter.datacenters={datacenter}&filter.names={name}"
+    ).format(vcenter_hostname=vcenter_hostname, datacenter=datacenter, name=name)
+    if parent_folder:
+        url += f"&filter.parent_folders={parent_folder}"
+    q(url)
+    async with session.get(url) as resp:
+        _json = await resp.json()
+        q(_json)
+        return _json["value"][0]["folder"]
+        #return _json["value"][0]["folder"], _json["value"][0]["type"]
+
+
+async def datacenter_to_moid(session, vcenter_hostname, name):
+    url = (
+        "https://{vcenter_hostname}" "/rest/vcenter/datacenter?filter.names={name}"
+    ).format(name=name, vcenter_hostname=vcenter_hostname)
+    async with session.get(url) as resp:
+        _json = await resp.json()
+        return _json["value"][0]["datacenter"]
+
+
+async def datastore_to_moid(session, vcenter_hostname, name):
+    url = (
+        "https://{vcenter_hostname}" "/rest/vcenter/datastore?filter.names={name}"
+    ).format(name=name, vcenter_hostname=vcenter_hostname)
+    async with session.get(url) as resp:
+        _json = await resp.json()
+        return _json["value"][0]["datastore"]
+
+
+async def cluster_to_moid(session, vcenter_hostname, datacenter, name):
+    url = (
+        "https://{vcenter_hostname}" "/rest/vcenter/cluster?filter.datacenters={datacenter}&filter.names={name}"
+    ).format(datacenter=datacenter, name=name, vcenter_hostname=vcenter_hostname)
+    q(url)
+    async with session.get(url) as resp:
+        _json = await resp.json()
+        return _json["value"][0]["cluster"]
+
+
+async def resourcepool_to_moid(session, vcenter_hostname, datacenter, name):
+    url = (
+        "https://{vcenter_hostname}" "/rest/vcenter/resource-pool?filter.datacenters={datacenter}&filter.names={name}"
+        #"https://{vcenter_hostname}" "/rest/vcenter/resource-pool?filter.datacenters={datacenter}&filter.cluster={cluster}&filter.names={name}"
+    ).format(datacenter=datacenter, name=name, vcenter_hostname=vcenter_hostname)
+    q(url)
+    async with session.get(url) as resp:
+        _json = await resp.json()
+        q(_json)
+        return _json["value"][0]["resource_pool"]
+
+
+
+def subtype_by_type(resource_type):
+    return {
+            "VIRTUAL_MACHINE": ["vm"],
+            "DATACENTER": ["folder"],
+            "DATASTORE": ["datastore"],
+            "HOST": ["host", "cluster", "resource-pool"],
+            }[resource_type]
+
+
+
+async def path_to_moid(session, vcenter_hostname, path):
+    if not path:
+        return
+    if path[0] != "/":
+        return
+    import q
+    q("starting")
+    q(path)
+
+    entries = list(reversed(path.split("/")))
+    entries.pop()
+    datacenter = await datacenter_to_moid(session, vcenter_hostname, entries.pop())
+    folder_type = "datacenter"
+    folders = []
+
+    if entries[0] == "host" and len(entries) == 2:
+        return cluster_to_moid(session, vcenter_hostname, datacenter, entries[1])
+    elif entries[0] == "host" and len(entries) == 3:
+        cluster = cluster_to_moid(session, vcenter_hostname, datacenter, entries[1])
+        return resourcepool_to_moid(session, vcenter_hostname, datacenter, cluster, entries[2])
+
+    while len(entries) > 1:
+        folder_name = entries.pop()
+        parent_folder = folders[-1] if folders else None
+        folder, folder_type = await folder_to_moid(
+            session, vcenter_hostname, datacenter, folder_name, parent_folder=parent_folder
+        )
+        folders.append(folder)
+
+    q(folder)
+    q(folder_type)
+
+    name = entries.pop()
+    for key in subtype_by_type(folder_type):
+        url = (
+            "https://{vcenter_hostname}/rest/vcenter/{key}"
+            "?filter.folders={folder}&filter.names={name}"
+        ).format(key=key, folder=folders[-1], name=name, vcenter_hostname=vcenter_hostname)
+        q(url)
+        async with session.get(url) as resp:
+            _json = await resp.json()
+            q(_json)
+        if not _json["value"]:
+            continue
+        return _json["value"][0][key]

@@ -28,24 +28,33 @@ ______________________
 
 First we create a new SATA adapter. We specify the ``pci_slot_number``. This way if we run the task again it won't do anything if there is already an adapter there.
 
-.. literalinclude:: task_outputs/Create_a_SATA_adapter_at_PCI_slot_34.task.yaml
+.. ansible-task::
 
-Result
-______
-
-.. literalinclude:: task_outputs/Create_a_SATA_adapter_at_PCI_slot_34.result.json
+  - name: Create a SATA adapter at PCI slot 34
+    vmware.vmware_rest.vcenter_vm_hardware_adapter_sata:
+      vm: '{{ test_vm1_info.id }}'
+      pci_slot_number: 34
+    register: _sata_adapter_result_1
 
 Add a CDROM drive
 _________________
 
 Now we can create the CDROM drive:
 
-.. literalinclude:: task_outputs/Attach_an_ISO_image_to_a_guest_VM.task.yaml
+.. ansible-task::
 
-Result
-______
-
-.. literalinclude:: task_outputs/Attach_an_ISO_image_to_a_guest_VM.result.json
+  - name: Attach an ISO image to a guest VM
+    vmware.vmware_rest.vcenter_vm_hardware_cdrom:
+      vm: '{{ test_vm1_info.id }}'
+      type: SATA
+      sata:
+        bus: 0
+        unit: 2
+      start_connected: true
+      backing:
+        iso_file: '[ro_datastore] fedora.iso'
+        type: ISO_FILE
+    register: _result
 
 
 .. _vmware_rest_attach_a_network:
@@ -60,91 +69,108 @@ Here we attach the VM to the network (through the portgroup). We specify a ``pci
 
 The second task adjusts the NIC configuration.
 
-.. literalinclude:: task_outputs/Attach_a_VM_to_a_dvswitch.task.yaml
+.. ansible-task::
 
-Result
-______
+  - name: Attach a VM to a dvswitch
+    vmware.vmware_rest.vcenter_vm_hardware_ethernet:
+      vm: '{{ test_vm1_info.id }}'
+      pci_slot_number: 4
+      backing:
+        type: DISTRIBUTED_PORTGROUP
+        network: "{{ my_portgroup_info.dvs_portgroup_info.dvswitch1[0].key }}"
+      start_connected: false
+    register: vm_hardware_ethernet_1
 
-.. literalinclude:: task_outputs/Attach_a_VM_to_a_dvswitch.result.json
 
 Adjust the configuration of the NIC
 ___________________________________
 
-.. literalinclude:: task_outputs/Turn_the_NIC's_start_connected_flag_on.task.yaml
+.. ansible-task::
 
-Result
-______
-
-.. literalinclude:: task_outputs/Turn_the_NIC's_start_connected_flag_on.result.json
+  - name: Turn the NIC's start_connected flag on
+    vmware.vmware_rest.vcenter_vm_hardware_ethernet:
+      nic: '{{ vm_hardware_ethernet_1.id }}'
+      start_connected: true
+      vm: '{{ test_vm1_info.id }}'
 
 Increase the memory of the VM
 =============================
 
 We can also adjust the amount of memory that we dedicate to our VM.
 
-.. literalinclude:: task_outputs/Increase_the_memory_of_a_VM.task.yaml
+.. ansible-task::
 
-Result
-______
-
-.. literalinclude:: task_outputs/Increase_the_memory_of_a_VM.result.json
+  - name: Increase the memory of a VM
+    vmware.vmware_rest.vcenter_vm_hardware_memory:
+      vm: '{{ test_vm1_info.id }}'
+      size_MiB: 1080
+    register: _result
 
 Upgrade the hardware version of the VM
 ======================================
 
 Here we use the ``vcenter_vm_hardware`` module to upgrade the version of the hardware: 
 
-.. literalinclude:: task_outputs/Upgrade_the_VM_hardware_version.task.yaml
+.. ansible-task::
 
-Result
-______
+  - name: Upgrade the VM hardware version
+    vmware.vmware_rest.vcenter_vm_hardware:
+      upgrade_policy: AFTER_CLEAN_SHUTDOWN
+      upgrade_version: VMX_13
+      vm: '{{ test_vm1_info.id }}'
+    register: _result
 
-.. literalinclude:: task_outputs/Upgrade_the_VM_hardware_version.result.json
 
 Adjust the number of CPUs of the VM
 ===================================
 
 You can use ``vcenter_vm_hardware_cpu`` for that:
 
-.. literalinclude:: task_outputs/Dedicate_one_core_to_the_VM.task.yaml
+.. ansible-task::
 
-Result
-______
-
-.. literalinclude:: task_outputs/Dedicate_one_core_to_the_VM.result.json
+  - name: Dedicate one core to the VM
+    vmware.vmware_rest.vcenter_vm_hardware_cpu:
+      vm: '{{ test_vm1_info.id }}'
+      count: 1
+    register: _result
 
 Remove a SATA controller
 ========================
 
 In this example, we remove the SATA controller of the PCI slot 34.
 
-.. literalinclude:: task_outputs/Remove_SATA_adapter_at_PCI_slot_34.result.json
+.. ansible-task::
 
-Result
-______
-
-.. literalinclude:: task_outputs/Remove_SATA_adapter_at_PCI_slot_34.result.json
+  - name: Dedicate one core to the VM
+    vmware.vmware_rest.vcenter_vm_hardware_cpu:
+      vm: '{{ test_vm1_info.id }}'
+      count: 1
+    register: _result
 
 Attach a floppy drive
 =====================
 
 Here we attach a floppy drive to a VM.
 
-.. literalinclude:: task_outputs/Add_a_floppy_disk_drive.task.yaml
+.. ansible-task::
 
-Result
-______
-
-.. literalinclude:: task_outputs/Add_a_floppy_disk_drive.result.json
+  - name: Add a floppy disk drive
+    vmware.vmware_rest.vcenter_vm_hardware_floppy:
+      vm: '{{ test_vm1_info.id }}'
+      allow_guest_control: true
+    register: my_floppy_drive
 
 Attach a new disk
 =================
 
 Here we attach a tiny disk to the VM. The ``capacity`` is in bytes.
 
-.. literalinclude:: task_outputs/Create_a_new_disk.task.yaml
+.. ansible-task::
 
-Result
-______
-
-.. literalinclude:: task_outputs/Create_a_new_disk.result.json
+  - name: Create a new disk
+    vmware.vmware_rest.vcenter_vm_hardware_disk:
+      vm: '{{ test_vm1_info.id }}'
+      type: SATA
+      new_vmdk:
+        capacity: 320000
+    register: my_new_disk

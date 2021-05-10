@@ -8,6 +8,11 @@ How to collect information about your environment
   :local:
 
 
+.. ansible-hidden-tasks:
+
+  - import_role:
+      name: prepare_lab
+
 Introduction
 ============
 
@@ -28,7 +33,7 @@ Our environment is pre-initialized with the following elements:
 - Two datastores on the ESXi: ``rw_datastore`` and ``ro_datastore``
 - A dvswitch based guest network
 
-Finally, we use the environment variables to authenticate ourselves as explained in :ref:`vmware_rest_authentication`. 
+Finally, we use the environment variables to authenticate ourselves as explained in :ref:`vmware_rest_authentication`.
 
 How to collect information
 ==========================
@@ -40,70 +45,68 @@ All these modules return a ``value`` key. Depending on the context, this ``value
 Datacenter
 ----------
 
-Here we use the ``vcenter_datacenter_info`` module to list all the datacenters:
+Here we use the ``vcenter_datacenter_info`` module to list all the datacenters. As expected, the ``value`` key of the output is a list.
 
-.. literalinclude:: task_outputs/collect_a_list_of_the_datacenters.task.yaml
+.. ansible-task:
 
-Result
-______
-
-As expected, the ``value`` key of the output is a list.
-
-.. literalinclude:: task_outputs/collect_a_list_of_the_datacenters.result.json
+  - name: collect a list of the datacenters
+    vmware.vmware_rest.vcenter_datacenter_info:
+    register: my_datacenters
 
 Cluster
 -------
 
 Here we do the same with ``vcenter_cluster_info``:
 
-.. literalinclude:: task_outputs/Build_a_list_of_all_the_clusters.task.yaml
+.. ansible-task:
 
-Result
-______
-
-.. literalinclude:: task_outputs/Build_a_list_of_all_the_clusters.result.json
+  - name: Build a list of all the clusters
+    vmware.vmware_rest.vcenter_cluster_info:
+    register: all_the_clusters
 
 And we can also fetch the details about a specific cluster, with the ``cluster`` parameter:
 
-.. literalinclude:: task_outputs/Retrieve_details_about_the_first_cluster.task.yaml
+.. ansible-task:
 
-Result
-______
+  - name: Retrieve details about the first cluster
+    vmware.vmware_rest.vcenter_cluster_info:
+      cluster: "{{ all_the_clusters.value[0].cluster }}"
+    register: my_cluster_info
+
 
 And the ``value`` key of the output is this time a dictionary.
-
-
-.. literalinclude:: task_outputs/Retrieve_details_about_the_first_cluster.result.json
 
 Datastore
 ---------
 
 Here we use ``vcenter_datastore_info`` to get a list of all the datastores:
 
-.. literalinclude:: task_outputs/Retrieve_a_list_of_all_the_datastores.task.yaml
 
-Result
-______
+.. ansible-task:
 
-.. literalinclude:: task_outputs/Retrieve_a_list_of_all_the_datastores.result.json
+  - name: Retrieve a list of all the datastores
+    vmware.vmware_rest.vcenter_datastore_info:
+    register: my_datastores
+
 
 Folder
 ------
 
 And here again, you use the ``vcenter_folder_info`` module to retrieve a list of all the folders.
 
-.. literalinclude:: task_outputs/Build_a_list_of_all_the_folders.task.yaml
+.. ansible-task:
 
-Result
-______
-
-.. literalinclude:: task_outputs/Build_a_list_of_all_the_folders.result.json
+  - name: Build a list of all the folders
+    vmware.vmware_rest.vcenter_folder_info:
+    register: my_folders
 
 Most of the time, you will just want one type of folder. In this case we can use filters to reduce the amount to collect. Most of the ``_info`` modules come with similar filters.
 
-.. literalinclude:: task_outputs/Build_a_list_of_all_the_folders_with_the_type_VIRTUAL_MACHINE_and_called_vm.task.yaml
+.. ansible-task::
 
-Result
-______
-
-.. literalinclude:: task_outputs/Build_a_list_of_all_the_folders_with_the_type_VIRTUAL_MACHINE_and_called_vm.result.json
+- name: Build a list of all the folders with the type VIRTUAL_MACHINE and called vm
+  vmware.vmware_rest.vcenter_folder_info:
+    filter_type: VIRTUAL_MACHINE
+    filter_names:
+      - vm
+  register: my_folders

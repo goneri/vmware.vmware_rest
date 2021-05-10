@@ -28,12 +28,23 @@ How to create a virtual machine
 
 In this example, we will use the ``vcenter_vm`` module to create a new guest.
 
-.. literalinclude:: task_outputs/Create_a_VM.task.yaml
+.. ansible-taske::
 
-Result
-______
+  - name: Create a VM
+    vmware.vmware_rest.vcenter_vm:
+      placement:
+        cluster: "{{ my_cluster_info.id }}"
+        datastore: "{{ my_datastore.datastore }}"
+        folder: "{{ my_virtual_machine_folder.folder }}"
+        resource_pool: "{{ my_cluster_info.value.resource_pool }}"
+      name: test_vm1
+      guest_OS: DEBIAN_8_64
+      hardware_version: VMX_11
+      memory:
+        hot_add_enabled: true
+        size_MiB: 1024
+    register: _result
 
-.. literalinclude:: task_outputs/Create_a_VM.result.json
 
 .. note::
     ``vcenter_vm`` accepts more parameters, however you may prefer to start with a simple VM and use the ``vcenter_vm_hardware`` modules to tune it up afterwards. It's easier this way to identify a potential problematical step.

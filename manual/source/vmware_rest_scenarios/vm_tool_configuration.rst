@@ -26,20 +26,22 @@ Change the upgrade policy to MANUAL
 
 You can adjust the VMware Tools upgrade policy with the ``vcenter_vm_tools`` module.
 
-.. literalinclude:: task_outputs/Change_vm-tools_upgrade_policy_to_MANUAL.task.yaml
+.. ansible-task::
 
-Result
-______
-
-.. literalinclude:: task_outputs/Change_vm-tools_upgrade_policy_to_MANUAL.result.json
+  - name: Change vm-tools upgrade policy to MANUAL
+    vmware.vmware_rest.vcenter_vm_tools:
+      vm: '{{ test_vm1_info.id }}'
+      upgrade_policy: MANUAL
+    register: _result
 
 
 Change the upgrade policy to UPGRADE_AT_POWER_CYCLE 
 ------------------------------------------------------------------------------------------
 
-.. literalinclude:: task_outputs/Change_vm-tools_upgrade_policy_to_UPGRADE_AT_POWER_CYCLE.task.yaml
+.. ansible-task::
 
-Result
-______
-
-.. literalinclude:: task_outputs/Change_vm-tools_upgrade_policy_to_UPGRADE_AT_POWER_CYCLE.result.json
+  - name: Change vm-tools upgrade policy to UPGRADE_AT_POWER_CYCLE
+    vmware.vmware_rest.vcenter_vm_tools:
+      vm: '{{ test_vm1_info.id }}'
+      upgrade_policy: UPGRADE_AT_POWER_CYCLE
+    register: _result

@@ -31,36 +31,43 @@ about the filesystem of the guest. In this example we also use a ``retries``
 loop. The VMware Tools may take a bit of time to start and by doing so, we give
 the VM a bit more time.
 
-.. literalinclude:: task_outputs/Get_guest_filesystem_information.task.yaml
+.. ansible-task::
 
-Result
-______
+  - name: Get guest filesystem information
+    vmware.vmware_rest.vcenter_vm_guest_localfilesystem_info:
+      vm: '{{ test_vm1_info.id }}'
+    register: _result
+    until:
+    - _result is not failed
+    retries: 60
+    delay: 5
 
-.. literalinclude:: task_outputs/Get_guest_filesystem_information.result.json
 
 Guest identity
 --------------
 
 You can use ``vcenter_vm_guest_identity_info`` to get details like the OS family or the hostname of the running VM.
 
-.. literalinclude:: task_outputs/Get_guest_identity_information.task.yaml
+.. ansible-task::
 
-Result
-______
+  - name: Get guest identity information
+    vmware.vmware_rest.vcenter_vm_guest_identity_info:
+      vm: '{{ test_vm1_info.id }}'
+    register: _result
 
-.. literalinclude:: task_outputs/Get_guest_identity_information.result.json
 
 Network
 -------
 
 ``vcenter_vm_guest_networking_info`` will return the OS network configuration.
 
-.. literalinclude:: task_outputs/Get_guest_networking_information.task.yaml
+.. ansible-task::
 
-Result
-______
+  - name: Get guest networking information
+    vmware.vmware_rest.vcenter_vm_guest_networking_info:
+      vm: '{{ test_vm1_info.id }}'
+    register: _result
 
-.. literalinclude:: task_outputs/Get_guest_networking_information.result.json
 
 Network interfaces
 ------------------
@@ -69,22 +76,21 @@ Network interfaces
 
 See also :ref:`vmware_rest_attach_a_network`.
 
-.. literalinclude:: task_outputs/Get_guest_network_interfaces_information.task.yaml
+.. ansible-task::
 
-Result
-______
-
-.. literalinclude:: task_outputs/Get_guest_network_interfaces_information.result.json
+  - name: Get guest network interfaces information
+    vmware.vmware_rest.vcenter_vm_guest_networking_interfaces_info:
+      vm: '{{ test_vm1_info.id }}'
+    register: _result
 
 Network routes
 --------------
 
 Use ``vcenter_vm_guest_networking_routes_info`` to explore the route table of your vitual machine.
 
-.. literalinclude:: task_outputs/Get_guest_network_routes_information.task.yaml
+.. ansible-task::
 
-Result
-______
-
-.. literalinclude:: task_outputs/Get_guest_network_routes_information.result.json
-
+  - name: Get guest network routes information
+    vmware.vmware_rest.vcenter_vm_guest_networking_routes_info:
+      vm: '{{ test_vm1_info.id }}'
+    register: _result

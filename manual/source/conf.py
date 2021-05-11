@@ -18,7 +18,7 @@
 # -- Project information -----------------------------------------------------
 
 project = 'vmware_rest examples'
-copyright = '2020, Ansible contributors'
+copyright = '2020-2021, Ansible contributors'
 author = 'Ansible contributors'
 
 
@@ -27,8 +27,8 @@ author = 'Ansible contributors'
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = [
-]
+extensions = ['sphinxcontrib.sphinx_ansible']
+ansible_roles_path = ['~/.ansible/collections/ansible_collections/vmware/vmware_rest/tests/integration/targets']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']

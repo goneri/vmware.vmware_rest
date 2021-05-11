@@ -28,7 +28,27 @@ How to create a virtual machine
 
 In this example, we will use the ``vcenter_vm`` module to create a new guest.
 
-.. ansible-taske::
+.. ansible-task::
+
+  - debug: var=my_cluster_info.id
+
+.. ansible-task::
+
+  - debug: var=my_datastore
+
+.. ansible-task::
+
+  - debug: var=my_datastore.datastore
+
+.. ansible-task::
+
+  - debug: var=my_virtual_machine_folder
+
+.. ansible-task::
+
+  - debug: var=my_cluster_info
+
+.. ansible-task::
 
   - name: Create a VM
     vmware.vmware_rest.vcenter_vm:

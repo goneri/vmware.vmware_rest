@@ -18,3 +18,12 @@ These scenarios teach you how to accomplish common VMware tasks using the REST A
    vmware_rest_scenarios/run_a_vm
    vmware_rest_scenarios/vm_tool_information
    vmware_rest_scenarios/vm_tool_configuration
+
+****************************************
+Manage a vCenter Server Appliance (VCSA)
+****************************************
+
+.. toctree::
+   :maxdepth: 1
+
+   appliance/appliance_access

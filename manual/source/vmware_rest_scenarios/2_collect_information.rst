@@ -8,7 +8,7 @@ How to collect information about your environment
   :local:
 
 
-.. ansible-hidden-tasks:
+.. ansible-hidden-tasks::
 
   - import_role:
       name: prepare_lab
@@ -47,7 +47,7 @@ Datacenter
 
 Here we use the ``vcenter_datacenter_info`` module to list all the datacenters. As expected, the ``value`` key of the output is a list.
 
-.. ansible-task:
+.. ansible-task::
 
   - name: collect a list of the datacenters
     vmware.vmware_rest.vcenter_datacenter_info:
@@ -58,7 +58,7 @@ Cluster
 
 Here we do the same with ``vcenter_cluster_info``:
 
-.. ansible-task:
+.. ansible-task::
 
   - name: Build a list of all the clusters
     vmware.vmware_rest.vcenter_cluster_info:
@@ -66,7 +66,7 @@ Here we do the same with ``vcenter_cluster_info``:
 
 And we can also fetch the details about a specific cluster, with the ``cluster`` parameter:
 
-.. ansible-task:
+.. ansible-task::
 
   - name: Retrieve details about the first cluster
     vmware.vmware_rest.vcenter_cluster_info:
@@ -79,14 +79,24 @@ And the ``value`` key of the output is this time a dictionary.
 Datastore
 ---------
 
-Here we use ``vcenter_datastore_info`` to get a list of all the datastores:
+Here we use ``vcenter_datastore_info`` to get a list of all the datastore called ``rw_datastore``:
 
 
-.. ansible-task:
+.. ansible-task::
 
   - name: Retrieve a list of all the datastores
     vmware.vmware_rest.vcenter_datastore_info:
+      filter_names:
+      - rw_datastore
     register: my_datastores
+
+We save the first datastore in `my_datastore` fact for later use.
+
+.. ansible-task::
+
+ - name: Set my_datastore
+   set_fact:
+      my_datastore: '{{ my_datastores.value|first }}'
 
 
 Folder
@@ -94,7 +104,7 @@ Folder
 
 And here again, you use the ``vcenter_folder_info`` module to retrieve a list of all the folders.
 
-.. ansible-task:
+.. ansible-task::
 
   - name: Build a list of all the folders
     vmware.vmware_rest.vcenter_folder_info:
@@ -104,9 +114,18 @@ Most of the time, you will just want one type of folder. In this case we can use
 
 .. ansible-task::
 
-- name: Build a list of all the folders with the type VIRTUAL_MACHINE and called vm
-  vmware.vmware_rest.vcenter_folder_info:
-    filter_type: VIRTUAL_MACHINE
-    filter_names:
-      - vm
-  register: my_folders
+  - name: Build a list of all the folders with the type VIRTUAL_MACHINE and called vm
+    vmware.vmware_rest.vcenter_folder_info:
+      filter_type: VIRTUAL_MACHINE
+      filter_names:
+        - vm
+    register: my_folders
+
+
+Register the first folder for later use.
+
+.. ansible-task::
+
+  - name: Set my_virtual_machine_folder
+    set_fact:
+      my_virtual_machine_folder: '{{ my_folders.value|first }}'

@@ -122,7 +122,7 @@ Most of the time, you will just want one type of folder. In this case we can use
     register: my_folders
 
 
-Register the first folder for later use.
+We register the first folder for later use with ``set_fact``.
 
 .. ansible-task::
 

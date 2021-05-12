@@ -73,4 +73,31 @@ The swap usage:
 .. ansible-task::
 
   - name: Get the health of the swap
-    vmware.vmware_rest.appliance_health_swap_info::
+    vmware.vmware_rest.appliance_health_swap_info:
+
+
+Monitoring
+----------
+
+You can also retrieve information from the VCSA monitoring backend. First you need the name of the item. To get a full list of these items, run:
+
+.. ansible-task::
+
+  - name: Get the list of the monitored items
+    vmware.vmware_rest.appliance_monitoring_info:
+    register: result
+
+
+With this information, you can access the information for a given time frame:
+
+.. ansible-task::
+
+  - name: Query the monitoring backend
+    vmware.vmware_rest.appliance_monitoring_query:
+      end_time: 2021-04-14T09:34:56.000Z
+      start_time: 2021-04-14T08:34:56.000Z
+      names:
+        - mem.total
+      interval: MINUTES5
+      function: AVG
+    register: result

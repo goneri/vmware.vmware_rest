@@ -33,3 +33,4 @@ Manage a vCenter Server Appliance (VCSA)
 
    appliance/appliance_access
    appliance/health
+   appliance/network

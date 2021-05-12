@@ -47,6 +47,11 @@
 
 - debug: var=result
 
+- name: Get the health state of applmgmt
+  vmware.vmware_rest.appliance_health_applmgmt_info:
+  register: result
+
+- debug: var=result
 # returns an err500
 #- name: Get the health state of system last_check
 #  vmware.vmware_rest.appliance_health_system_lastcheck:

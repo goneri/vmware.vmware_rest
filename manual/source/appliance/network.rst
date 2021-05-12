@@ -20,7 +20,7 @@ The appliance_networking_info exposes the state of the global network configurat
     vmware.vmware_rest.appliance_networking_info:
 
 And you can adjust the parameters with the appliance_networking module.
-    
+
 .. ansible-task::
 
   - name: Set network information
@@ -38,7 +38,7 @@ The appliance_networking_interfaces_info returns a list of the Network Interface
     vmware.vmware_rest.appliance_networking_interfaces_info:
 
 You can also use the ``interface_name`` parameter to just focus on one single entry:
-    
+
 .. ansible-task::
 
   - name: Get details about one network interfaces
@@ -59,8 +59,8 @@ The search domain configuration can be done with appliance_networking_dns_domain
   - name: Get DNS domains configuration
     vmware.vmware_rest.appliance_networking_dns_domains_info:
 
-There is two way to set the search domain. By default the value you pass in ``domains`` will overwrite the existing domain: 
-  
+There is two way to set the search domain. By default the value you pass in ``domains`` will overwrite the existing domain:
+
 .. ansible-task::
 
   - name: Update the domain configuration
@@ -69,10 +69,10 @@ There is two way to set the search domain. By default the value you pass in ``do
         - foobar
 
 If you instead use the ``state=add`` parameter, the ``domain`` value will complet the existing list of domains.
-        
+
 .. ansible-task::
 
   - name: Add another domain configuration
     vmware.vmware_rest.appliance_networking_dns_domains:
       domain: barfoo
-      state: add
+      state: add:

@@ -27,3 +27,4 @@ Manage a vCenter Server Appliance (VCSA)
    :maxdepth: 1
 
    appliance/appliance_access
+   appliance/health

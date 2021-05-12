@@ -4,10 +4,6 @@
 How to install the vmware_rest collection
 *****************************************
 
-.. contents::
-  :local:
-  
-
 Requirements
 ============
 

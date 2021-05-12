@@ -4,11 +4,8 @@
 How to collect information about your environment
 *************************************************
 
-.. contents::
-  :local:
-
-
-.. ansible-hidden-tasks::
+.. ansible-tasks::
+  :hide:
 
   - import_role:
       name: prepare_lab
@@ -56,7 +53,7 @@ Here we use the ``vcenter_datacenter_info`` module to list all the datacenters. 
 Cluster
 -------
 
-Here we do the same with ``vcenter_cluster_info``:
+Here we do the same with ``vcenter_cluster_info`` module:
 
 .. ansible-task::
 

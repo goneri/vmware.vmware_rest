@@ -4,10 +4,6 @@
 How to configure the vmware_rest collection
 *******************************************
 
-.. contents::
-  :local:
-
-
 Introduction
 ============
 

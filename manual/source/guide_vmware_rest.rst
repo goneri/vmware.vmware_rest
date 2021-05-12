@@ -1,16 +1,21 @@
 .. _vmware_rest_scenarios:
 
-****************************
-VMware REST Scenarios
-****************************
-
-These scenarios teach you how to accomplish common VMware tasks using the REST API and the Ansible ``vmware.vmware_rest`` collection. To get started, please select the task you want to accomplish.
 
 .. toctree::
    :maxdepth: 1
 
    vmware_rest_scenarios/1_installation
    vmware_rest_scenarios/1_authentication
+
+*******************************
+Life cycle of a Virtual Machine
+*******************************
+
+These scenarios teach you how to accomplish common VMware tasks using the REST API and the Ansible ``vmware.vmware_rest`` collection. To get started, please select the task you want to accomplish.
+
+.. toctree::
+   :maxdepth: 1
+
    vmware_rest_scenarios/2_collect_information
    vmware_rest_scenarios/3_create_vm
    vmware_rest_scenarios/4_vm_info

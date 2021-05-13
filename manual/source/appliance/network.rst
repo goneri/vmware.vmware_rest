@@ -194,29 +194,3 @@ And we finally reverse the configuration:
   - name: Remove the noproxy entries
     vmware.vmware_rest.appliance_networking_noproxy:
       servers: []
-
-Time Service (NTP)
-==================
-
-You can use the appliance_ntp module to specify a NTP server:
-
-.. ansible-task::
-
-  - name: Get the NTP configuration
-    vmware.vmware_rest.appliance_ntp_info:
-
-
-.. ansible-task::
-
-  - name: Adjust the NTP configuration
-    vmware.vmware_rest.appliance_ntp:
-      servers:
-        - time.google.com
-
-.. ansible-task::
-
-  - name: Test the NTP configuration
-    vmware.vmware_rest.appliance_ntp:
-      state: test
-      servers:
-        - time.google.com

@@ -15,7 +15,7 @@ You can use Ansible to trigger or cancel a shutdown. The appliance_shutdown_info
       vmware.vmware_rest.appliance_shutdown_info:
 
 When you trigger a shutdown, you can also specify a ``reason``. The information will be exposed to the other users:
-      
+
 .. ansible-task::
 
     - name: Shutdown the appliance
@@ -25,7 +25,7 @@ When you trigger a shutdown, you can also specify a ``reason``. The information 
         delay: 600
 
 To cancel a shutdown, you must set the ``state`` to ``cancel``:
-        
+
 .. ansible-task::
 
     - name: Abort the shutdown of the appliance
@@ -74,7 +74,7 @@ The appliance_system_time_timezone and ppliance_system_time_timezone_info module
       vmware.vmware_rest.appliance_system_time_timezone_info:
 
 And to adjust the system's timezone, just do:
-      
+
 .. ansible-task::
 
     - name: Use the UTC timezone
@@ -103,6 +103,7 @@ The VCSA can get the time from a NTP server:
   - name: Get the NTP configuration
     vmware.vmware_rest.appliance_ntp_info:
 
+You can use the appliance_ntp module to adjust the system NTP servers. The module accepts one or more NTP servers:
 
 .. ansible-task::
 
@@ -110,6 +111,8 @@ The VCSA can get the time from a NTP server:
     vmware.vmware_rest.appliance_ntp:
       servers:
         - time.google.com
+
+If you set ``state=test``, the module will validate the servers are rechable.
 
 .. ansible-task::
 
@@ -133,7 +136,7 @@ Or also validate the system use NTP with:
     - name: Ensure we use NTP
       vmware.vmware_rest.appliance_timesync:
         mode: NTP
-      
+
 **************
 Storage system
 **************
@@ -147,7 +150,7 @@ The collection also provides modules to manage the storage system. appliance_sys
       vmware.vmware_rest.appliance_system_storage_info:
 
 You can use the ``state=resize_ex`` option to extend an existing partition:
-      
+
 .. ansible-task::
 
     - name: Resize the first partition and return the state of the partition before and after the operation
